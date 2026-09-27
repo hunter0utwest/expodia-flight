@@ -7,10 +7,10 @@ export async function recordDocumentEvent(supabase: SupabaseClient,input:{docume
   return supabase.from('document_events').insert({document_id:input.documentId,booking_id:input.bookingId??null,event_type:input.eventType,actor_type:input.actorType,actor_id:input.actorId??null,metadata:input.metadata??{}});
 }
 
-export async function queueTravelEmail(supabase:SupabaseClient,input:{templateId:TravelEmailTemplateId;documentId?:string|null;bookingId?:string|null;recipientEmail:string;subject?:string;canonicalData:Record<string,unknown>;metadata?:Record<string,unknown>}) {
+export async function queueTravelEmail(supabase:SupabaseClient,input:{templateId:TravelEmailTemplateId;documentId?:string|null;bookingId?:string|null;recipientEmail:string;subject?:string;canonicalData?:Record<string,unknown>;metadata?:Record<string,unknown>}) {
   const template=getTravelEmailTemplate(input.templateId);
   if(!template) throw new Error('Unknown travel email template');
-  const missing=template.requiredFields.filter((field)=>input.canonicalData[field]===undefined||input.canonicalData[field]===null||String(input.canonicalData[field]).trim()==='');
+  const missing=input.canonicalData ? template.requiredFields.filter((field)=>input.canonicalData?.[field]===undefined||input.canonicalData?.[field]===null||String(input.canonicalData?.[field]).trim()==='') : [];
   if(missing.length) throw new Error(`EMAIL_CANONICAL_DATA_MISSING: ${missing.join(',')}`);
   return supabase.from('email_deliveries').insert({document_id:input.documentId??null,booking_id:input.bookingId??null,template_id:template.id,template_version:'1.0',recipient_email:input.recipientEmail,subject:input.subject??template.subject,status:'QUEUED',metadata:{...(input.metadata??{}),canonicalData:input.canonicalData}}).select('id').single();
 }
