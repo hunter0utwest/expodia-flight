@@ -2,6 +2,7 @@ create table if not exists public.agent_registration_codes (
   id uuid primary key default gen_random_uuid(),
   code_hash text not null unique,
   label text,
+  intended_email text,
   expires_at timestamptz,
   revoked_at timestamptz,
   max_redemptions integer not null default 1 check (max_redemptions > 0),
