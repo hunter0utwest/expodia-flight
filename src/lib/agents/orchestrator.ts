@@ -34,4 +34,16 @@ export function routeTicketedTravel(context: OrchestrationContext): AgentJob[] {
     createAgentJob('wallet_worker', 'evaluate_wallet_eligibility', {}, context),
   ];
 }
-export function acceptWorkerResult(result: AgentResult): AgentJob[] { return result.status === 'FAILED' ? [] : result.nextJobs ?? []; }
+export function routeContinuousDiscoveryWork(): AgentJob[] {
+  return [
+    createAgentJob('flight_discovery', 'monitor_assigned_sources', {}),
+    createAgentJob('airport_discovery', 'monitor_assigned_sources', {}),
+    createAgentJob('travel_discovery', 'monitor_assigned_sources', {}),
+    createAgentJob('travel_news', 'monitor_assigned_sources', {}),
+    createAgentJob('technical_update_discovery', 'monitor_assigned_sources', {}),
+  ];
+}
+
+export function acceptWorkerResult(result: AgentResult): AgentJob[] {
+  return result.status === 'FAILED' ? [] : result.nextJobs ?? [];
+}
