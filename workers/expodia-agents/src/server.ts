@@ -21,7 +21,7 @@ export class ExpodiaResearchAgent extends AIChatAgent<Env> {
       browser: this.env.BROWSER,
       loader: this.env.LOADER,
       session: { mode: "dynamic" },
-      quickActions: { maxChars: 20000 }
+      quickActions: { maxChars: 20000 },
     });
     const result = streamText({
       model: workersAI("@cf/zai-org/glm-4.7-flash"),
@@ -31,11 +31,11 @@ export class ExpodiaResearchAgent extends AIChatAgent<Env> {
         "Never invent prices, availability, bookings, ticket status, properties, images, schedules, or policies.",
         "Prefer official airline, airport, government, provider and tourism sources.",
         "Return concise factual findings and the source pages you inspected.",
-        "Do not expose internal implementation details or worker identity to travelers."
+        "Do not expose internal implementation details or worker identity to travelers.",
       ].join(" "),
       messages: await convertToModelMessages(this.messages),
       tools: browserTools,
-      stopWhen: stepCountIs(10)
+      stopWhen: stepCountIs(10),
     });
     return result.toUIMessageStreamResponse();
   }
@@ -44,7 +44,8 @@ export class ExpodiaResearchAgent extends AIChatAgent<Env> {
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
     return (await routeAgentRequest(request, env)) ?? new Response("Not found", { status: 404 });
-  }
+  },
+
   async scheduled(controller, env) {
     const response = await env.EXPODIA_PLATFORM.fetch(
       new Request("https://expodia.internal/api/internal/email-deliveries/process", {
