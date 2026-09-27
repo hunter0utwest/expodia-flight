@@ -31,12 +31,12 @@ function LoginForm() {
     <main className="verificationPage">
       <section className="verificationCard">
         <div className="verificationBadge">EXPODIA FLIGHTS</div>
-        <h1 style={{ marginTop: 12 }}>Agent sign in</h1>
-        <p>Use an authorized Expodia agent account. Booking operations require authenticated access.</p>
+        <h1 style={{ marginTop: 12 }}>Expodia access</h1>
+        <p>This secure area is for authorized Expodia travel professionals. Public travelers can use the traveler sign-in instead.</p>
         <form onSubmit={submit} style={{ display: 'grid', gap: 16, marginTop: 24 }}>
           <label>Email<input name="email" type="email" autoComplete="email" required /></label>
           <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
-          <button className="primary" type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
+          <button className="primary" type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button><div className="notice">Professional account registration is invitation-only. Use the private registration link supplied by your Expodia administrator.</div>
           {error && <div className="notice" role="alert">{error}</div>}
         </form>
       </section>
