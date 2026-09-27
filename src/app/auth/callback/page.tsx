@@ -14,7 +14,8 @@ export default function AuthCallbackPage() {
     async function complete() {
       const supabase = createSupabaseBrowserClient();
       const code = params.get('code');
-      const next = params.get('next') || '/traveler';
+      const requestedNext = params.get('next') || '/traveler';
+      const next = requestedNext.startsWith('/') && !requestedNext.startsWith('//') ? requestedNext : '/traveler';
 
       if (code) {
         const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
