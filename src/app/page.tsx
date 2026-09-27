@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 const discoveries = [
-  { label: 'Aviation intelligence', text: 'Follow verified airline, airport, aircraft and route developments.', href: '/aviation' },
-  { label: 'Flight tracking', text: 'Check a flight and follow its operational journey when live data is available.', href: '/tracking' },
+  { label: 'Aviation intelligence', text: 'Follow verified airline, airport, aircraft and route developments.', href: '/aviation-public' },
+  { label: 'Flight tracking', text: 'Check a flight and follow its operational journey when live data is available.', href: '/track' },
   { label: 'Your journey', text: 'Save flights, import past journeys and receive journey notifications.', href: '/traveler' },
 ];
 
@@ -13,8 +13,8 @@ export default function HomePage() {
         <Link href="/" className="publicBrand">Expodia Flights</Link>
         <nav className="publicNav" aria-label="Main navigation">
           <Link href="/explore">Explore</Link>
-          <Link href="/tracking">Track</Link>
-          <Link href="/aviation">Aviation</Link>
+          <Link href="/track">Track</Link>
+          <Link href="/aviation-public">Aviation</Link>
           <Link href="/traveler">My journeys</Link>
           <Link href="/login" className="agentAccess">Agent Access</Link>
         </nav>
@@ -27,7 +27,7 @@ export default function HomePage() {
           <p>Discover flights, follow aircraft movements, explore aviation developments and keep the journeys that matter to you in one place.</p>
           <div className="heroActions">
             <Link className="publicPrimary" href="/explore">Explore flights</Link>
-            <Link className="publicSecondary" href="/tracking">Track a flight</Link>
+            <Link className="publicSecondary" href="/track">Track a flight</Link>
           </div>
         </div>
         <div className="heroMap" aria-label="Global aviation map preview">
@@ -45,7 +45,7 @@ export default function HomePage() {
             <div className="publicEyebrow">WHAT'S HAPPENING</div>
             <h2>See the aviation world beyond the booking.</h2>
           </div>
-          <Link href="/aviation">Open aviation intelligence →</Link>
+          <Link href="/aviation-public">Open aviation intelligence →</Link>
         </div>
         <div className="discoveryGrid">
           {discoveries.map((item) => (
