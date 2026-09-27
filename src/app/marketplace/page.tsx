@@ -19,6 +19,7 @@ export default function MarketplacePage() {
     setItems(r.ok ? await r.json() : []);
     setLoading(false);
   }
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(()=>{void search()},[]);
   return <main className="publicPage">
     <header className="publicHeader"><Link href="/" className="publicBrand">Expodia Flights</Link><nav className="publicNav"><Link href="/explore">Explore</Link><Link href="/track">Track</Link><Link href="/traveler">My journeys</Link><Link href="/assistant">Assistant</Link><Link href="/access" className="agentAccess">Sign in</Link></nav></header>
