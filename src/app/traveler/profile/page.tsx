@@ -62,7 +62,7 @@ export default function TravelerProfilePage() {
       <header className="travelerAppHeader">
         <Link href="/traveler" className="travelerAppBrand">Expodia</Link>
         <nav className="travelerAppNav" aria-label="Traveler navigation">
-          <Link href="/traveler">Home</Link><Link href="/traveler?tab=groups">Groups</Link><Link href="/support">Inbox</Link>
+          <Link href="/traveler">Home</Link><Link href="/traveler?tab=groups">Groups</Link><Link href="/traveler/inbox">Inbox</Link>
           <span className="travelerNavActive">Profile</span>
         </nav>
       </header>
