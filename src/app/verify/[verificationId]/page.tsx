@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { headers } from 'next/headers';
 
 type VerificationState =
   | { kind: 'invalid' }
@@ -12,66 +12,106 @@ type VerificationState =
       providerTicketId: string | null;
       eTicketNumber: string | null;
       status: string;
+      passengerName: string | null;
+      providerName: string | null;
+      pnr: string | null;
+      itinerary: Array<{
+        airline: string;
+        flightNumber: string;
+        origin: string;
+        destination: string;
+        departure: string;
+        arrival: string;
+      }>;
     };
 
 export default async function VerificationPage({ params }: { params: Promise<{ verificationId: string }> }) {
   const { verificationId } = await params;
   const state = await loadVerificationState(verificationId);
 
-  if (state.kind === 'invalid') return <VerificationResult title="Ticket not found" message="The verification reference is invalid." />;
-  if (state.kind === 'not-found') return <VerificationResult title="Ticket not found" message="No active ticket matches this verification reference." />;
-  if (state.kind === 'not-valid') return <VerificationResult title="Ticket not valid" message="The linked ticket is not currently issued." />;
-  if (state.kind === 'unavailable') return <VerificationResult title="Verification unavailable" message="The verification service could not be reached. No ticket validity claim was made." />;
+  if (state.kind === 'invalid') return <VerificationResult title="Travel document not found" message="The verification reference is invalid." />;
+  if (state.kind === 'not-found') return <VerificationResult title="Travel document not found" message="No active travel document matches this verification reference." />;
+  if (state.kind === 'not-valid') return <VerificationResult title="Travel document not valid" message="The linked travel document is not currently issued." />;
+  if (state.kind === 'unavailable') return <VerificationResult title="Verification unavailable" message="The verification service could not be reached. No validity claim was made." />;
 
   return (
     <main className="verificationPage">
       <section className="verificationCard">
-        <div className="verificationBadge">VERIFIED TICKET</div>
-        <h1>Ticket verification</h1>
-        <p>This record resolves to the authoritative Expodia ticket record.</p>
+        <div className="verificationBadge">VERIFIED TRAVEL DOCUMENT</div>
+        <h1>Expodia document verification</h1>
+        <p>This result is resolved from the authoritative Expodia booking and ticket records.</p>
         <dl className="verificationDetails">
           <div><dt>Verification reference</dt><dd>{state.verificationReference}</dd></div>
-          <div><dt>Ticket ID</dt><dd>{state.ticketId}</dd></div>
+          <div><dt>Passenger</dt><dd>{state.passengerName ?? 'Not supplied'}</dd></div>
+          <div><dt>Provider</dt><dd>{state.providerName ?? 'Not supplied'}</dd></div>
+          <div><dt>Booking reference</dt><dd>{state.pnr ?? 'Not supplied by provider'}</dd></div>
           <div><dt>Provider ticket</dt><dd>{state.providerTicketId ?? 'Not supplied by provider'}</dd></div>
           <div><dt>E-ticket number</dt><dd>{state.eTicketNumber ?? 'Not supplied by provider'}</dd></div>
           <div><dt>Status</dt><dd>{state.status}</dd></div>
         </dl>
-        <p className="verificationNote">Flight times and operational status can change after ticket issuance. Use the current booking or tracking record for live operational information.</p>
+        <section>
+          <h2>Journey</h2>
+          {state.itinerary.length === 0 ? (
+            <p>Authoritative itinerary details are not available.</p>
+          ) : (
+            state.itinerary.map((segment, index) => (
+              <div className="card" key={`${segment.flightNumber}-${index}`}>
+                <strong>{segment.airline} {segment.flightNumber}</strong>
+                <p>{segment.origin} → {segment.destination}</p>
+                <p>Departure: {new Date(segment.departure).toLocaleString()}</p>
+                <p>Arrival: {new Date(segment.arrival).toLocaleString()}</p>
+              </div>
+            ))
+          )}
+        </section>
+        <p className="verificationNote">Only limited verification information is public. Passport data, date of birth, payment data, internal IDs and private agent notes are not exposed. Flight times and operational status can change after issuance.</p>
       </section>
     </main>
   );
 }
 
 async function loadVerificationState(verificationId: string): Promise<VerificationState> {
-  if (!verificationId || verificationId.length > 128) return { kind: 'invalid' };
+  if (!/^[A-Za-z0-9_-]{20,128}$/.test(verificationId)) return { kind: 'invalid' };
 
   try {
-    const supabase = await createSupabaseServerClient();
-    const { data: verification, error } = await supabase
-      .from('verification_records')
-      .select('ticket_id, verification_reference, active')
-      .eq('verification_reference', verificationId)
-      .eq('active', true)
-      .maybeSingle();
+    const requestHeaders = await headers();
+    const host = requestHeaders.get('host');
+    if (!host) return { kind: 'unavailable' };
 
-    if (error || !verification) return { kind: 'not-found' };
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    const response = await fetch(`${protocol}://${host}/api/verify/${encodeURIComponent(verificationId)}`, {
+      cache: 'no-store',
+      headers: {
+        'x-forwarded-for': requestHeaders.get('x-forwarded-for') ?? 'unknown',
+      },
+    });
 
-    const { data: ticket, error: ticketError } = await supabase
-      .from('tickets')
-      .select('id, provider_ticket_id, e_ticket_number, status')
-      .eq('id', verification.ticket_id)
-      .maybeSingle();
+    if (response.status === 400) return { kind: 'invalid' };
+    if (response.status === 404) {
+      const body = await response.json().catch(() => null);
+      return body?.error?.code === 'NOT_VALID' ? { kind: 'not-valid' } : { kind: 'not-found' };
+    }
+    if (!response.ok) return { kind: 'unavailable' };
 
-    if (ticketError) return { kind: 'unavailable' };
-    if (!ticket || ticket.status !== 'ISSUED') return { kind: 'not-valid' };
-
+    const body = await response.json();
     return {
       kind: 'verified',
-      verificationReference: verification.verification_reference,
-      ticketId: ticket.id,
-      providerTicketId: ticket.provider_ticket_id,
-      eTicketNumber: ticket.e_ticket_number,
-      status: ticket.status,
+      verificationReference: body.verificationReference,
+      ticketId: body.ticket.id,
+      providerTicketId: body.ticket.providerTicketId,
+      eTicketNumber: body.ticket.eTicketNumber,
+      status: body.status,
+      passengerName: body.passenger?.name ?? null,
+      providerName: body.booking?.providerName ?? null,
+      pnr: body.booking?.pnr ?? null,
+      itinerary: (body.itinerary ?? []).map((segment: VerificationState['verified']['itinerary'][number]) => ({
+        airline: segment.airline,
+        flightNumber: segment.flightNumber,
+        origin: segment.origin,
+        destination: segment.destination,
+        departure: segment.departure,
+        arrival: segment.arrival,
+      })),
     };
   } catch {
     return { kind: 'unavailable' };
