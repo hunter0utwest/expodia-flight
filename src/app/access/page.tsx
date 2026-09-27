@@ -127,7 +127,7 @@ export default function AccessPage() {
 
     setLoading(true);
     const supabase = createSupabaseBrowserClient();
-    const { data, error: signupError } = await supabase.auth.signUp({ email, password });
+    const { data, error: signupError } = await supabase.auth.signUp({ email, password, options: { data: { username, access_type: 'traveler' } } });
 
     if (signupError || !data.user) {
       setError(signupError?.message || 'We could not create your traveler account.');
@@ -141,10 +141,10 @@ export default function AccessPage() {
       return;
     }
 
-    const { error: profileError } = await supabase.from('traveler_profiles').insert({
+    const { error: profileError } = await supabase.from('traveler_profiles').upsert({
       user_id: data.user.id,
       username,
-    });
+    }, { onConflict: 'user_id' });
 
     if (profileError) {
       await supabase.auth.signOut();
