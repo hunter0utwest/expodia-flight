@@ -10,7 +10,7 @@ export default function TravelerSignupPage() { const router=useRouter();
     event.preventDefault(); setError(''); setMessage(''); setLoading(true);
     const form = new FormData(event.currentTarget); const username=String(form.get('username')??'').trim(); const email=String(form.get('email')??'').trim(); const password=String(form.get('password')??'');
     if (!/^[A-Za-z0-9_]{3,30}$/.test(username)) { setError('Choose a username with 3–30 letters, numbers, or underscores.'); setLoading(false); return; }
-    const supabase=createSupabaseBrowserClient(); const {data,error:signUpError}=await supabase.auth.signUp({email,password});
+    const supabase=createSupabaseBrowserClient(); const {data,error:signUpError}=await supabase.auth.signUp({email,password,options:{data:{username,access_type:'traveler'},emailRedirectTo:`${window.location.origin}/auth/callback?next=/traveler`}});
     if(signUpError){setError(signUpError.message);setLoading(false);return;}
     if(data.user&&data.session){
       const {error:profileError}=await supabase.from('traveler_profiles').insert({user_id:data.user.id,username});
