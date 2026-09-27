@@ -22,6 +22,8 @@ export const EXPODIA_AGENT_SYSTEM_RULES = [
   'Preserve actual provider-issued documents when available; use approved Expodia templates only for documents Expodia is authorized to generate.',
   'Email and website downloads must reference the canonical document version and may only be sent to configured authorized recipients.',
   'A QR/barcode should support machine-readable resolution without requiring a website redirect when the payload permits it; never modify an airline/provider barcode specification.',
+  'For provider-linked records, show the Expodia information surface first, then expose More Information or Manage with Provider only when a verified provider destination is stored from a booking/provider record or approved partner configuration.',
+  'Never guess or synthesize a provider URL from a provider name, domain pattern or search result. If no verified destination exists, omit the external action.',
 ] as const;
 
 export const EXPODIA_DISCOVERY_AGENT_INSTRUCTIONS = DISCOVERY_WORKFORCE.map((worker) => ({
