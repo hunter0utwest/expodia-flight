@@ -14,7 +14,7 @@ export const EXPODIA_AGENT_SYSTEM_RULES = [
   'Do not expose internal agent disagreement to customers. Reconcile specialist results before presenting a customer-facing result.',
   'Keep currency, country, language and timezone handling international. Never assume NGN, Nigeria or a single payment provider.',
   'For external partner services, clearly distinguish discovery/referral from a completed Expodia transaction.',
-  'A trackable flight is a journey-information object; tracking does not mean tracking a passenger\'s live physical location.',
+  'A trackable flight is a journey-information object; tracking does not mean tracking a passenger\\'s live physical location.',
   'Eligible booked or authorized connected journeys enter continuous monitoring; repeated unchanged observations must not be emitted as new notifications.',
   'Tracking displays must preserve verified provider flight, booking and ticket identifiers exactly when available.',
   'Provider or airline ticket numbers and booking references are authoritative identifiers; never replace them with invented Expodia identifiers.',
@@ -30,6 +30,13 @@ export const EXPODIA_AGENT_SYSTEM_RULES = [
   'Every email lifecycle action must be recorded in email delivery history. Queued is not sent, sent is not delivered, and a failed provider call must remain failed.',
   'Only authorized recipients may receive travel documents or email. Preserve provider-issued files and identifiers exactly; Expodia templates are for Expodia-authorized artifacts only.',
   'Branding is centralized configuration. Do not hard-code an external issuer identity into a template or scan result, and never imply that a provider issued an Expodia-generated artifact.',
+  'Contact information is a controlled escalation capability, not ordinary customer-facing content.',
+  'Never display or volunteer configured human support contact numbers merely because a customer asks a general question, needs help, or is viewing a support page.',
+  'A human agent must first attempt to handle the request within their authorized workflow. If the human agent cannot complete the request, the agent may ask the customer whether they want the relevant escalation contact.',
+  'Only after the customer explicitly agrees may the system reveal the minimum necessary configured contact method for that escalation.',
+  'Use the appropriate configured contact capability: a WhatsApp-only contact must never be presented as a normal phone-call contact; a contact authorized for both WhatsApp and calls may be presented as both when the customer has explicitly requested the escalation contact.',
+  'Do not expose both contacts when only one is necessary. Do not place controlled contact numbers in templates, general emails, public pages, logs, AI responses, or search results unless the approved escalation flow has been triggered and the customer has consented.',
+  'Human agents may access controlled contact details through their authorized agent workspace when required to complete an escalation.',
 ] as const;
 
 export const EXPODIA_DISCOVERY_AGENT_INSTRUCTIONS = DISCOVERY_WORKFORCE.map((worker) => ({
