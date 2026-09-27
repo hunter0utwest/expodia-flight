@@ -75,7 +75,7 @@ export default function AssistantPage(){
       <p>Tell Expodia in ordinary language. I can guide you through planning, tracking and support. I will not invent availability, prices, bookings or ticket status.</p>
       <form className="assistantComposer" onSubmit={submit}><input value={request} onChange={event=>setRequest(event.target.value)} placeholder="Ask Expodia to research something…"/><button className="publicPrimary" type="submit" disabled={loading}>{loading?'Researching…':'Research'}</button></form>
       <div className="assistantSuggestions">{suggestions.map(item=><button key={item} onClick={()=>{setRequest(item);setReply(`I can help you organise “${item}”. If a travel professional is needed, I can route the conversation to an eligible professional who is online.`);}}>{item}</button>)}</div>
-      <div className="assistantReply">{reply}</div>{sources.length>0&&<div className="assistantSources"><strong>Sources</strong>{sources.map(source=><a key={source} href={source} target="_blank" rel="noreferrer">{source}</a>)}</div>
+      <div className="assistantReply">{reply}</div>{sources.length>0&&<div className="assistantSources"><strong>Sources</strong>{sources.map(source=><a key={source} href={source} target="_blank" rel="noreferrer">{source}</a>)}</div>}
       <div className="assistantHandoff"><div><strong>Need a travel professional?</strong><span>Expodia can check for an eligible professional who is currently online and route the conversation without asking you for an agent ID.</span></div><button className="publicSecondary" type="button" onClick={connectHuman} disabled={loading}>{loading?'Checking…':'Connect me'}</button></div>
       <Link className="publicSecondary assistantPlanLink" href="/traveler">Open My Plan</Link>
     </section>
