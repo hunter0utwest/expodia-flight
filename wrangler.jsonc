@@ -15,6 +15,10 @@
     {
       "binding": "WORKER_SELF_REFERENCE",
       "service": "expodia-flight"
+    },
+    {
+      "binding": "EXPODIA_AGENTS",
+      "service": "expodia-agents"
     }
   ],
   "observability": {
