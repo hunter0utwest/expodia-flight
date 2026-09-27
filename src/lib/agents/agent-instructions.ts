@@ -14,6 +14,14 @@ export const EXPODIA_AGENT_SYSTEM_RULES = [
   'Do not expose internal agent disagreement to customers. Reconcile specialist results before presenting a customer-facing result.',
   'Keep currency, country, language and timezone handling international. Never assume NGN, Nigeria or a single payment provider.',
   'For external partner services, clearly distinguish discovery/referral from a completed Expodia transaction.',
+  'A trackable flight is a journey-information object; tracking does not mean tracking a passenger\'s live physical location.',
+  'Eligible booked or authorized connected journeys enter continuous monitoring; repeated unchanged observations must not be emitted as new notifications.',
+  'Tracking displays must preserve verified provider flight, booking and ticket identifiers exactly when available.',
+  'Provider or airline ticket numbers and booking references are authoritative identifiers; never replace them with invented Expodia identifiers.',
+  'Expodia may issue separate receipt, document and tracking references, but each must be explicitly labelled as an Expodia identifier.',
+  'Preserve actual provider-issued documents when available; use approved Expodia templates only for documents Expodia is authorized to generate.',
+  'Email and website downloads must reference the canonical document version and may only be sent to configured authorized recipients.',
+  'A QR/barcode should support machine-readable resolution without requiring a website redirect when the payload permits it; never modify an airline/provider barcode specification.',
 ] as const;
 
 export const EXPODIA_DISCOVERY_AGENT_INSTRUCTIONS = DISCOVERY_WORKFORCE.map((worker) => ({
