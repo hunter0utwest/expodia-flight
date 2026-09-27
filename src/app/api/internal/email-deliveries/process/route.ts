@@ -17,7 +17,20 @@ export async function POST(request: Request) {
   for (const row of rows ?? []) {
     try {
       const metadata = (row.metadata ?? {}) as Record<string, unknown>;
-      const data = (metadata.canonicalData ?? {}) as Record<string, unknown>;
+      let data = (metadata.canonicalData ?? {}) as Record<string, unknown>;
+      if (row.booking_id) {
+        const { data: booking } = await supabase.from('bookings').select('id,pnr').eq('id',row.booking_id).maybeSingle();
+        const { data: document } = row.document_id ? await supabase.from('documents').select('metadata,document_number').eq('id',row.document_id).maybeSingle() : { data: null };
+        const documentMeta = (document?.metadata ?? {}) as Record<string, unknown>;
+        data = { ...documentMeta, ...data, confirmation: data.confirmation ?? booking?.pnr, documentNumber: data.documentNumber ?? document?.document_number };
+      }
+      if (metadata.ticketId && row.booking_id) {
+        const { data: ticket } = await supabase.from('tickets').select('id,passenger_id,provider_ticket_id,e_ticket_number').eq('id',String(metadata.ticketId)).maybeSingle();
+        const { data: passenger } = ticket?.passenger_id ? await supabase.from('passengers').select('given_name,family_name').eq('id',ticket.passenger_id).maybeSingle() : { data: null };
+        const { data: segments } = await supabase.from('flight_segments').select('flight_number,origin_iata,destination_iata,departure_local,arrival_local').eq('booking_id',row.booking_id).order('departure_local');
+        const first = segments?.[0];
+        data = { ...data, passenger: data.passenger ?? (passenger ? [passenger.given_name,passenger.family_name].filter(Boolean).join(' ') : undefined), ticketNumber: data.ticketNumber ?? ticket?.e_ticket_number ?? ticket?.provider_ticket_id, route: data.route ?? (first ? `${first.origin_iata} → ${first.destination_iata}` : undefined), flightNumber: data.flightNumber ?? first?.flight_number, departureTime: data.departureTime ?? first?.departure_local, arrivalTime: data.arrivalTime ?? first?.arrival_local, departureAirport: data.departureAirport ?? first?.origin_iata, arrivalAirport: data.arrivalAirport ?? first?.destination_iata };
+      }
       const rendered = renderTravelEmail({ templateId: row.template_id as TravelEmailTemplateId, data, actionUrl: typeof metadata.actionUrl === 'string' ? metadata.actionUrl : null });
       const sent = await sendTravelEmail({ to: row.recipient_email, subject: row.subject ?? rendered.subject, html: rendered.html });
       await supabase.from('email_deliveries').update({ status:'SENT', provider_message_id: sent.id ?? null, sent_at:new Date().toISOString() }).eq('id',row.id);
