@@ -21,14 +21,14 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tic
       return new Response('A provider-issued ticket is required before a document can be generated', { status: 409 });
     }
 
-    const [{ data: passenger }, { data: booking }, { data: segments }, { data: customer }] = await Promise.all([
+    const [{ data: passenger }, { data: booking }, { data: segments }] = await Promise.all([
       supabase.from('passengers').select('id, given_name, family_name').eq('id', ticket.passenger_id).maybeSingle(),
       supabase.from('bookings').select('id, agent_id, customer_id, pnr, currency, total_amount').eq('id', ticket.booking_id).maybeSingle(),
       supabase.from('flight_segments').select('carrier_code, flight_number, origin_iata, destination_iata, departure_local, arrival_local, aircraft_code, stops').eq('booking_id', ticket.booking_id).order('departure_local'),
-      supabase.from('customers').select('email').eq('id', ticket.booking_id ? (await supabase.from('bookings').select('customer_id').eq('id', ticket.booking_id).single()).data?.customer_id ?? '' : '').maybeSingle(),
     ]);
 
     if (!booking || booking.agent_id !== user.id) return new Response('Forbidden', { status: 403 });
+    const { data: customer } = await supabase.from('customers').select('email').eq('id', booking.customer_id).eq('agent_id', user.id).maybeSingle();
     if (!passenger || !segments?.length) return new Response('Ticket data is incomplete', { status: 409 });
 
     const artifact = await generateTicketDocument({
