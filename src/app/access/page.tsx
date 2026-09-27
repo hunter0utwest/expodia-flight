@@ -5,80 +5,126 @@ import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
-type Mode = 'signin' | 'signup';
-type SignupKind = 'traveler' | 'job';
-
 export default function AccessPage() {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>('signin');
-  const [signupKind, setSignupKind] = useState<SignupKind>('traveler');
-  const [jobType, setJobType] = useState('agent');
-  const [agentCode, setAgentCode] = useState('');
+  const [signUpMode, setSignUpMode] = useState(false);
+  const [professionalMode, setProfessionalMode] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [codeStep, setCodeStep] = useState(false);
 
   async function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(''); setMessage(''); setLoading(true);
     const form = new FormData(event.currentTarget);
-    const email = String(form.get('email') ?? '').trim();
+    const email = String(form.get('email') ?? '').trim().toLowerCase();
     const password = String(form.get('password') ?? '');
     const supabase = createSupabaseBrowserClient();
     const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-    if (signInError) {
-      setError('Sign-in failed. Check your details and try again.');
+
+    if (signInError || !data.user) {
+      setError('Sign-in failed. Check your email and password and try again.');
       setLoading(false);
       return;
     }
-    const { data: agent } = await supabase.from('agents').select('id').eq('id', data.user.id).maybeSingle();
-    router.push(agent ? '/' : '/traveler');
+
+    const [{ data: agent }, { data: traveler }] = await Promise.all([
+      supabase.from('agents').select('id').eq('id', data.user.id).maybeSingle(),
+      supabase.from('traveler_profiles').select('user_id').eq('user_id', data.user.id).maybeSingle(),
+    ]);
+
+    if (agent) {
+      router.replace('/');
+      return;
+    }
+
+    if (traveler) {
+      router.replace('/traveler');
+      return;
+    }
+
+    await supabase.auth.signOut();
+    setError('This account is not assigned to an Expodia access type yet. Contact Expodia support.');
+    setLoading(false);
   }
 
-  async function submitSignup(event: FormEvent<HTMLFormElement>) {
+  async function signUp(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(''); setMessage('');
+
     const form = new FormData(event.currentTarget);
-    const fullName = String(form.get('fullName') ?? '').trim();
-    const email = String(form.get('email') ?? '').trim();
-    const shortMessage = String(form.get('shortMessage') ?? '').trim();
+    const email = String(form.get('email') ?? '').trim().toLowerCase();
+    const password = String(form.get('password') ?? '');
+    const username = String(form.get('username') ?? '').trim();
 
-    if (signupKind === 'traveler') {
-      router.push('/traveler/signup');
-      return;
-    }
-
-    if (jobType !== 'agent') {
-      setMessage('That opportunity is not currently open. Please try again later.');
-      return;
-    }
-
-    if (!fullName || !email || !shortMessage) {
-      setError('Enter your full name, email and a short message first.');
-      return;
-    }
-
-    if (!codeStep) {
-      setCodeStep(true);
-      return;
-    }
-
-    if (!/^\d{6}$/.test(agentCode)) {
-      setError('Enter the six-digit Expodia registration code.');
+    if (!/^[A-Za-z0-9_]{3,30}$/.test(username)) {
+      setError('Choose a username with 3–30 letters, numbers, or underscores.');
       return;
     }
 
     setLoading(true);
     const supabase = createSupabaseBrowserClient();
-    const { data: valid, error: codeError } = await supabase.rpc('verify_agent_registration_code', { p_code: agentCode });
-    if (codeError || valid !== true) {
-      setError('That registration code is not valid or is no longer active.');
+    const { data, error: signupError } = await supabase.auth.signUp({ email, password });
+
+    if (signupError || !data.user) {
+      setError(signupError?.message || 'We could not create your traveler account.');
       setLoading(false);
       return;
     }
 
-    const password = String(form.get('password') ?? '');
+    if (!data.session) {
+      setMessage('Your traveler account has been created. Check your email if confirmation is required, then sign in.');
+      setLoading(false);
+      return;
+    }
+
+    const { error: profileError } = await supabase.from('traveler_profiles').insert({
+      user_id: data.user.id,
+      username,
+    });
+
+    if (profileError) {
+      await supabase.auth.signOut();
+      setError(profileError.code === '23505' ? 'That username is already in use.' : 'We could not complete your traveler profile.');
+      setLoading(false);
+      return;
+    }
+
+    router.replace('/traveler');
+  }
+
+  async function professionalSignup(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(''); setMessage(''); setLoading(true);
+
+    const form = new FormData(event.currentTarget);
+    const fullName = String(form.get('fullName') ?? '').trim();
+    const email = String(form.get('professionalEmail') ?? '').trim().toLowerCase();
+    const shortMessage = String(form.get('shortMessage') ?? '').trim();
+    const code = String(form.get('referralCode') ?? '').trim();
+
+    if (!/^[0-9]{6}$/.test(code)) {
+      setError('Enter the six-digit Expodia referral code supplied with your invitation.');
+      setLoading(false);
+      return;
+    }
+
+    if (!fullName || !email || !shortMessage) {
+      setError('Complete your full name, email and short message.');
+      setLoading(false);
+      return;
+    }
+
+    const supabase = createSupabaseBrowserClient();
+    const { data: valid, error: codeError } = await supabase.rpc('verify_agent_registration_code', { p_code: code });
+
+    if (codeError || valid !== true) {
+      setError('That referral code is invalid, expired, revoked, or has already been used.');
+      setLoading(false);
+      return;
+    }
+
+    const password = String(form.get('professionalPassword') ?? '');
     if (password.length < 8) {
       setError('Create a password of at least 8 characters.');
       setLoading(false);
@@ -88,11 +134,17 @@ export default function AccessPage() {
     const { data, error: signupError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName, professional_application: true } },
+      options: { data: { full_name: fullName, access_type: 'professional' } },
     });
 
     if (signupError || !data.user) {
       setError(signupError?.message || 'We could not create the professional account.');
+      setLoading(false);
+      return;
+    }
+
+    if (!data.session) {
+      setMessage('Your professional account has been created. Check your email if confirmation is required, then sign in.');
       setLoading(false);
       return;
     }
@@ -105,18 +157,12 @@ export default function AccessPage() {
 
     if (profileError) {
       await supabase.auth.signOut();
-      setError('Your account could not be completed. Please contact an Expodia administrator.');
+      setError('We could not complete the professional account. Contact an Expodia administrator.');
       setLoading(false);
       return;
     }
 
-    setMessage(data.session
-      ? 'Your Expodia professional account is ready.'
-      : 'Your professional account has been created. Check your email if confirmation is required, then sign in.');
-    setLoading(false);
-    setMode('signin');
-    setCodeStep(false);
-    setAgentCode('');
+    router.replace('/');
   }
 
   return (
@@ -124,69 +170,48 @@ export default function AccessPage() {
       <section className="verificationCard travelerAuthCard">
         <div className="verificationBadge">EXPODIA</div>
         <h1 style={{ marginTop: 12 }}>Access</h1>
-        <p>Choose how you want to use Expodia. Travelers can create a space. Professional access is reserved for authorized Expodia workers.</p>
+        <p>Sign in to continue. Expodia automatically opens the correct traveler or professional workspace for your account.</p>
 
-        <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
-          <button className={mode === 'signin' ? 'primary' : 'publicSecondary'} type="button" onClick={() => { setMode('signin'); setError(''); setMessage(''); }}>Sign in</button>
-          <button className={mode === 'signup' ? 'primary' : 'publicSecondary'} type="button" onClick={() => { setMode('signup'); setError(''); setMessage(''); }}>Sign up</button>
-        </div>
-
-        {mode === 'signin' ? (
+        {!signUpMode ? (
           <form onSubmit={signIn} style={{ display: 'grid', gap: 16, marginTop: 24 }}>
             <label>Email<input name="email" type="email" autoComplete="email" required /></label>
             <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
-            <button className="primary" type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
+            <button className="primary" type="submit" disabled={loading}>{loading ? 'Checking…' : 'Sign in'}</button>
+            <button className="publicSecondary" type="button" onClick={() => { setSignUpMode(true); setError(''); setMessage(''); }}>Sign up</button>
             <div className="travelerAuthLinks">
-              <Link href="/traveler/login">Traveler sign-in</Link>
-              <Link href="/login">Professional sign-in</Link>
+              <Link href="/traveler">Continue without an account</Link>
             </div>
           </form>
         ) : (
-          <div style={{ marginTop: 24 }}>
-            <label>What do you want to sign up for?
-              <select value={signupKind} onChange={(e) => { setSignupKind(e.target.value as SignupKind); setCodeStep(false); setError(''); }}>
-                <option value="traveler">Traveler space</option>
-                <option value="job">I need a job</option>
-              </select>
-            </label>
-
-            {signupKind === 'traveler' ? (
-              <div className="notice" style={{ marginTop: 16 }}>
-                Create a traveler space for saved journeys, documents and travel plans.
-                <div style={{ marginTop: 12 }}><Link href="/traveler/signup">Continue to traveler sign up →</Link></div>
-              </div>
-            ) : (
-              <form onSubmit={submitSignup} style={{ display: 'grid', gap: 16, marginTop: 16 }}>
-                <label>Opportunity
-                  <select name="jobType" value={jobType} onChange={(e) => { setJobType(e.target.value); setCodeStep(false); setError(''); }}>
-                    <option value="agent">Travel agent / booking professional</option>
-                    <option value="other">Other opportunities</option>
-                  </select>
-                </label>
-
+          <>
+            {!professionalMode ? (
+              <form onSubmit={signUp} style={{ display: 'grid', gap: 16, marginTop: 24 }}>
+                <p><strong>Create a traveler account.</strong> Sign-up is for travelers. Professional worker registration requires an Expodia referral code.</p>
                 <label>Full name<input name="fullName" autoComplete="name" required /></label>
+                <label>Username<input name="username" autoComplete="username" placeholder="your_username" required /></label>
                 <label>Email<input name="email" type="email" autoComplete="email" required /></label>
-                <label>Short message<textarea name="shortMessage" rows={4} maxLength={500} placeholder="Tell Expodia briefly about your experience or what you can do." required /></label>
-
-                {jobType === 'agent' && codeStep && (
-                  <>
-                    <label>Six-digit Expodia registration code<input value={agentCode} onChange={(e) => setAgentCode(e.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" placeholder="000000" maxLength={6} required /></label>
-                    <label>Password<input name="password" type="password" autoComplete="new-password" minLength={8} required /></label>
-                  </>
-                )}
-
-                {jobType === 'other' ? (
-                  <button className="primary" type="submit">Submit</button>
-                ) : (
-                  <button className="primary" type="submit" disabled={loading}>{codeStep ? (loading ? 'Creating account…' : 'Verify code & create account') : 'Continue'}</button>
-                )}
-
-                {error && <div className="notice" role="alert">{error}</div>}
-                {message && <div className="notice" role="status">{message}</div>}
+                <label>Password<input name="password" type="password" autoComplete="new-password" minLength={8} required /></label>
+                <button className="primary" type="submit" disabled={loading}>{loading ? 'Creating…' : 'Create traveler account'}</button>
+                <button className="publicSecondary" type="button" onClick={() => setProfessionalMode(true)}>I have an Expodia referral code</button>
+                <button className="publicSecondary" type="button" onClick={() => { setSignUpMode(false); setError(''); setMessage(''); }}>Back to sign in</button>
+              </form>
+            ) : (
+              <form onSubmit={professionalSignup} style={{ display: 'grid', gap: 16, marginTop: 24 }}>
+                <p><strong>Expodia professional invitation.</strong> This route is invitation-only. A valid six-digit referral code identifies an authorized professional applicant.</p>
+                <label>Referral code<input name="referralCode" inputMode="numeric" autoComplete="one-time-code" maxLength={6} pattern="[0-9]{6}" placeholder="000000" required /></label>
+                <label>Full name<input name="fullName" autoComplete="name" required /></label>
+                <label>Email<input name="professionalEmail" type="email" autoComplete="email" required /></label>
+                <label>Short message<textarea name="shortMessage" rows={4} maxLength={500} placeholder="Briefly tell Expodia about your experience." required /></label>
+                <label>Password<input name="professionalPassword" type="password" autoComplete="new-password" minLength={8} required /></label>
+                <button className="primary" type="submit" disabled={loading}>{loading ? 'Verifying invitation…' : 'Create professional account'}</button>
+                <button className="publicSecondary" type="button" onClick={() => setProfessionalMode(false)}>Back to traveler sign up</button>
               </form>
             )}
-          </div>
+          </>
         )}
+
+        {error && <div className="notice" role="alert" style={{ marginTop: 16 }}>{error}</div>}
+        {message && <div className="notice" role="status" style={{ marginTop: 16 }}>{message}</div>}
       </section>
     </main>
   );
