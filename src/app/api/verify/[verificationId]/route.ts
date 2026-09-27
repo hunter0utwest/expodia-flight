@@ -74,7 +74,7 @@ export async function GET(
 
     const { data: booking, error: bookingError } = await admin
       .from('bookings')
-      .select('id, provider_name, provider_booking_id, pnr, status')
+      .select('id, provider_name, provider_booking_id, pnr, status, provider_destination_url, provider_manage_url, provider_destination_source, provider_destination_verified_at')
       .eq('id', ticket.booking_id)
       .maybeSingle();
 
