@@ -2,15 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getSupabaseConfig } from './lib/supabase/config';
 
-const publicPaths = [
-  '/',
-  '/explore',
-  '/tracking',
-  '/aviation',
-  '/traveler',
-  '/assistant',
-  '/login',
-];
+const publicPaths = ['/', '/explore', '/track', '/aviation-public', '/traveler', '/assistant', '/login'];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some((path) => pathname === path || pathname.startsWith('/verify/'));
@@ -22,9 +14,7 @@ export async function middleware(request: NextRequest) {
 
   const supabase = createServerClient(url, anonKey, {
     cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
+      getAll() { return request.cookies.getAll(); },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
         response = NextResponse.next({ request });
@@ -46,6 +36,4 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
-export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
-};
+export const config = { matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'] };
