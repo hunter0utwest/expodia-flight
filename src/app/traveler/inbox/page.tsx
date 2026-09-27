@@ -37,6 +37,16 @@ export default function TravelerInboxPage(){
 
   // eslint-disable-next-line react-hooks/set-state-in-effect\n  useEffect(()=>{void load();},[params]);
 
+  useEffect(()=>{
+    if(!active?.id)return;
+    const channel=supabase.channel('traveler-support-'+active.id)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'support_messages',filter:'conversation_id=eq.'+active.id},payload=>{
+        const message=payload.new as Message;
+        setMessages(current=>current.some(item=>item.id===message.id)?current:[...current,message]);
+      }).subscribe();
+    return()=>{void supabase.removeChannel(channel);};
+  },[active?.id,supabase]);
+
   async function send(){
     if(!active||!userId||!draft.trim())return;
     const body=draft.trim();
