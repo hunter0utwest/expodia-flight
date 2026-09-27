@@ -1,0 +1,9 @@
+{
+  "name": "expodia-agents",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {"dev": "wrangler dev", "deploy": "wrangler deploy", "typecheck": "tsc --noEmit"},
+  "dependencies": {"@cloudflare/ai-chat": "latest", "@cloudflare/codemode": "latest", "agents": "latest", "ai": "latest", "workers-ai-provider": "latest"},
+  "devDependencies": {"@cloudflare/workers-types": "latest", "typescript": "latest", "wrangler": "latest"}
+}
