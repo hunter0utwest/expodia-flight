@@ -14,6 +14,11 @@ export const EXPODIA_WORKERS = [
   { key: 'refund_worker', capability: 'Coordinate cancellation and refund workflows', requiresHumanApproval: true },
   { key: 'communication_worker', capability: 'Send customer communications from verified events', requiresHumanApproval: false },
   { key: 'integrity_worker', capability: 'Cross-check identifiers and block inconsistent outputs', requiresHumanApproval: false },
+  { key: 'flight_discovery', capability: 'Continuously discover meaningful flight and route changes', requiresHumanApproval: false },
+  { key: 'airport_discovery', capability: 'Continuously monitor airport and aviation updates', requiresHumanApproval: false },
+  { key: 'travel_discovery', capability: 'Continuously discover hotels, destinations, places, tours, activities and experiences', requiresHumanApproval: false },
+  { key: 'travel_news', capability: 'Continuously monitor and reconcile travel news updates', requiresHumanApproval: false },
+  { key: 'technical_update_discovery', capability: 'Monitor assigned technical sources for new commits, releases and documentation changes', requiresHumanApproval: false },
 ] as const;
 
 export type ExpodiaWorkerKey = (typeof EXPODIA_WORKERS)[number]['key'];
