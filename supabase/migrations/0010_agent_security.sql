@@ -121,3 +121,33 @@ $$;
 
 revoke execute on function public.verify_agent_security(text) from public, anon;
 grant execute on function public.verify_agent_security(text) to authenticated;
+
+
+create table if not exists public.agent_applications (
+  user_id uuid primary key references public.agents(id) on delete cascade,
+  short_message text not null check (char_length(short_message) between 1 and 500),
+  created_at timestamptz not null default now()
+);
+
+alter table public.agent_applications enable row level security;
+revoke all on table public.agent_applications from anon, authenticated;
+
+create or replace function public.record_agent_application(p_short_message text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare uid uuid := auth.uid();
+begin
+  if uid is null or not exists (select 1 from public.agents where id = uid) then return false; end if;
+  if p_short_message is null or char_length(trim(p_short_message)) < 1 or char_length(p_short_message) > 500 then return false; end if;
+  insert into public.agent_applications(user_id, short_message)
+  values (uid, trim(p_short_message))
+  on conflict (user_id) do update set short_message = excluded.short_message;
+  return true;
+end;
+$$;
+
+revoke execute on function public.record_agent_application(text) from public, anon;
+grant execute on function public.record_agent_application(text) to authenticated;
