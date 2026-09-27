@@ -104,7 +104,7 @@ async function loadVerificationState(verificationId: string): Promise<Verificati
       passengerName: body.passenger?.name ?? null,
       providerName: body.booking?.providerName ?? null,
       pnr: body.booking?.pnr ?? null,
-      itinerary: (body.itinerary ?? []).map((segment: VerificationState['verified']['itinerary'][number]) => ({
+      itinerary: (body.itinerary ?? []).map((segment: { airline: string; flightNumber: string; origin: string; destination: string; departure: string; arrival: string }) => ({
         airline: segment.airline,
         flightNumber: segment.flightNumber,
         origin: segment.origin,
