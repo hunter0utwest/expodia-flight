@@ -9,6 +9,8 @@ export interface Env {
   BROWSER: Fetcher;
   LOADER: WorkerLoader;
   ExpodiaResearchAgent: DurableObjectNamespace<ExpodiaResearchAgent>;
+  EXPODIA_PLATFORM: Fetcher;
+  EMAIL_WORKER_SECRET: string;
 }
 
 export class ExpodiaResearchAgent extends AIChatAgent<Env> {
@@ -43,4 +45,19 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
     return (await routeAgentRequest(request, env)) ?? new Response("Not found", { status: 404 });
   }
+  async scheduled(controller, env) {
+    const response = await env.EXPODIA_PLATFORM.fetch(
+      new Request("https://expodia.internal/api/internal/email-deliveries/process", {
+        method: "POST",
+        headers: {
+          "x-email-worker-secret": env.EMAIL_WORKER_SECRET,
+          "x-expodia-schedule": controller.cron,
+        },
+      }),
+    );
+
+    if (!response.ok) {
+      throw new Error(`Scheduled email delivery failed with HTTP ${response.status}`);
+    }
+  },
 } satisfies ExportedHandler<Env>;
