@@ -238,3 +238,36 @@ button.publicPrimary:disabled { opacity:.55; }
 
 .groupResearch{margin:0 18px 12px;padding:16px;border:1px solid rgba(23,21,19,.1);border-radius:14px;background:#faf8f5}.groupResearchForm{display:flex;gap:8px;margin-top:10px}.groupResearchForm input{flex:1}.groupResearchAnswer{margin-top:12px;white-space:pre-wrap;line-height:1.55;color:#3f3933}.groupResearchSources{display:grid;gap:4px;margin-top:10px}.groupResearchSources a{font-size:.78rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#5d5751}
 .assistantSources{margin-top:14px;display:grid;gap:5px}.assistantSources a{font-size:.78rem;color:#5d5751;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Expodia traveler: Reddit-style information architecture + flight-app visual language */
+.travelerSearchHint{display:flex;align-items:center;flex:1;max-width:430px;margin:0 18px;padding:10px 13px;border:1px solid var(--border);border-radius:999px;background:#f7f7f5;color:#8a8a84;font-size:11px}
+.travelerTopicRail{display:flex;gap:6px;overflow:auto;padding:0 max(16px,calc((100vw - 1180px)/2));border-bottom:1px solid var(--border);background:#fff;white-space:nowrap}
+.travelerTopicRail a,.travelerTopicRail button{border:0;background:transparent;color:#666;font-size:11px;font-weight:700;padding:12px 13px;text-decoration:none}
+.travelerTopicRail a:first-child{color:#111;border-bottom:2px solid var(--expedia-blue)}
+.travelerFeedLayout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:14px;align-items:start}
+.travelerFeedMain{min-width:0}
+.travelerFeedCard{padding:22px;background:#fff;border:1px solid var(--border);border-radius:12px;margin-bottom:12px}
+.travelerFeedMeta{display:flex;align-items:center;gap:7px;color:#85857f;font-size:9px;font-weight:800;letter-spacing:.08em}
+.travelerStatusDot{width:6px;height:6px;border-radius:50%;background:#188553;box-shadow:0 0 0 4px rgba(24,133,83,.09)}
+.travelerFeedCard h2{margin:11px 0 7px;font-size:21px;letter-spacing:-.035em}
+.travelerFeedCard p{margin:0;color:#6c6c66;font-size:12px;line-height:1.55}
+.travelerFeedActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:17px}
+.travelerFeedActions a,.travelerFeedActions button{border:1px solid var(--border-strong);background:#fff;color:#171717;border-radius:7px;padding:9px 12px;font-size:11px;font-weight:750;text-decoration:none}
+.travelerFeedActions a:first-child{background:var(--expedia-navy);color:#fff;border-color:var(--expedia-navy)}
+.travelerFeedRail{display:grid;gap:10px;position:sticky;top:78px}
+.travelerRailCard{display:grid;gap:8px;padding:17px;background:#fff;border:1px solid var(--border);border-radius:10px}
+.travelerRailCard strong{font-size:15px;letter-spacing:-.02em}
+.travelerRailCard>span:not(.publicEyebrow){color:#777;font-size:10px}
+.travelerRailCard a{color:#171717;text-decoration:none;font-size:11px;font-weight:750;padding-top:4px}
+.travelerBottomNav{display:none}
+@media(max-width:820px){
+  .travelerSearchHint{display:none}
+  .travelerTopicRail{padding:0 12px}
+  .travelerFeedLayout{display:block}
+  .travelerFeedRail{display:none}
+  .travelerBottomNav{position:fixed;left:10px;right:10px;bottom:10px;z-index:40;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:6px;background:rgba(255,255,255,.96);border:1px solid #dddcd7;border-radius:14px;box-shadow:0 12px 35px rgba(0,0,0,.12);backdrop-filter:blur(16px)}
+  .travelerBottomNav a,.travelerBottomNav button{display:grid;place-items:center;min-height:38px;border:0;background:transparent;color:#777;text-decoration:none;font-size:10px;font-weight:750;border-radius:9px}
+  .travelerBottomNav .active{background:#f0f0ed;color:#111}
+  .travelerWorkspace{padding-bottom:74px}
+}
+@media(min-width:821px){.travelerBottomNav{display:none!important}}
