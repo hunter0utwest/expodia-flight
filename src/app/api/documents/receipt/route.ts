@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { EXPODIA_RECEIPT_TEMPLATE, validateDocumentFields } from '@/lib/documents/templates';
 import { renderExpodiaReceiptPdf } from '@/lib/documents/pdf';
 import { sha256Hex } from '@/lib/documents/hash';
+import { queueTravelEmail, recordDocumentEvent } from '@/lib/documents/workflow';
 
 const PAYMENT_READY = new Set(['SUCCEEDED']);
 const BOOKING_READY = new Set([
@@ -115,6 +116,7 @@ export async function POST(request: Request) {
       mime_type: 'application/pdf',
       content_hash: hash,
       issued_at: issuedAt,
+      storage_path: `\${booking.id}/receipts/\${documentNumber}.pdf`,
       metadata,
     })
     .select('id, document_number, document_type, document_version, status, mime_type, content_hash, issued_at')
@@ -124,12 +126,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: { code: 'DOCUMENT_CREATE_FAILED', message: documentError?.message ?? 'The document record could not be created.' } }, { status: 500 });
   }
 
+  const storagePath = `${booking.id}/receipts/${documentNumber}.pdf`;
+  const upload = await supabase.storage.from('travel-documents').upload(storagePath, Buffer.from(pdf), {
+    contentType: 'application/pdf',
+    upsert: false,
+  });
+  if (upload.error && !upload.error.message.toLowerCase().includes('already exists')) {
+    return NextResponse.json({ error: { code: 'DOCUMENT_STORAGE_FAILED', message: 'The receipt was created but could not be stored.' } }, { status: 503 });
+  }
+
+  await supabase.from('documents').update({ storage_path: storagePath }).eq('id', document.id);
   await supabase.from('document_versions').insert({
     document_id: document.id,
     version: 1,
     status: 'READY',
     content_hash: hash,
   });
+  await recordDocumentEvent(supabase, { documentId: document.id, bookingId: booking.id, eventType: 'DOCUMENT_CREATED', actorType: 'AI', metadata: { worker: 'document_renderer', documentVersion: 1 } });
+  await recordDocumentEvent(supabase, { documentId: document.id, bookingId: booking.id, eventType: 'DOCUMENT_VERIFIED', actorType: 'AI', metadata: { paymentId: payment.id, paymentStatus: payment.status } });
+  await recordDocumentEvent(supabase, { documentId: document.id, bookingId: booking.id, eventType: 'DOCUMENT_PUBLISHED', actorType: 'AI', metadata: { surfaces: ['documents', 'payment-workflow'] } });
+  await queueTravelEmail(supabase, { templateId: 'payment-receipt', documentId: document.id, bookingId: booking.id, recipientEmail: customer.email, metadata: { paymentId: payment.id, documentVersion: 1 } });
 
   return new Response(pdf as BodyInit, {
     status: 200,
