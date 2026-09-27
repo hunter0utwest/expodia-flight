@@ -20,18 +20,29 @@ export default function AssistantPage(){
       setLoading(false);
       return;
     }
-    const subject=request.trim() || 'Traveler support request';
-    const {data,error}=await supabase.rpc('request_human_support',{p_subject:subject,p_category:'GENERAL'});
-    if(error || !data?.[0]){
+    const {data:agents}=await supabase.from('agent_presence').select('user_id,display_name').eq('status','ONLINE').gte('last_seen_at',new Date(Date.now()-120000).toISOString()).order('last_seen_at',{ascending:false}).limit(1);
+    const selected=agents?.[0];
+    const {data:conversation,error}=await supabase.from('support_conversations').insert({
+      subject:(request.trim() || 'Traveler support request').slice(0,200),
+      status:selected?'OPEN':'PENDING',
+      created_by:user.id,
+      assigned_agent_id:selected?.user_id ?? null,
+      category:'GENERAL',
+      priority:'NORMAL'
+    }).select('id').single();
+    if(error || !conversation){
       setReply('I could not open the support handoff right now. Please try again.');
       setLoading(false);
       return;
     }
-    const handoff=data[0];
-    if(handoff.queued){
-      setReply('No travel professional is available right now. Your request is in the support queue. You can keep planning while Expodia waits for an available professional.');
+    await supabase.from('support_conversation_participants').insert([
+      {conversation_id:conversation.id,user_id:user.id,participant_type:'TRAVELER'},
+      ...(selected?[{conversation_id:conversation.id,user_id:selected.user_id,participant_type:'AGENT'}]:[])
+    ]);
+    if(selected){
+      setReply(`I found an available Expodia travel professional. ${selected.display_name || 'They'} can now take over this conversation.`);
     }else{
-      setReply(`I found an available Expodia travel professional. ${handoff.assigned_agent_name || 'They'} can now take over this conversation.`);
+      setReply('No travel professional is available right now. Your request is in the support queue. You can keep planning while Expodia waits for an available professional.');
     }
     setLoading(false);
   }
