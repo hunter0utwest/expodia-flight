@@ -23,11 +23,28 @@ export default function AuthCallbackPage() {
           if (active) setError('This confirmation link could not be completed. Request a new confirmation email and try again.');
           return;
         }
-      } else {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          if (active) setError('The confirmation link is incomplete or has expired.');
-          return;
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        if (active) setError('The confirmation link is incomplete or has expired.');
+        return;
+      }
+
+      // OAuth/email traveler accounts need a profile row before the protected
+      // traveler workspace can recognize the account. This is provisioning,
+      // not authorization; middleware still authorizes by database role.
+      if (user.user_metadata?.access_type === 'traveler') {
+        const username = String(user.user_metadata?.username ?? '').trim();
+        if (username) {
+          const { error: profileError } = await supabase.from('traveler_profiles').upsert(
+            { user_id: user.id, username },
+            { onConflict: 'user_id' }
+          );
+          if (profileError) {
+            if (active) setError('Your account was authenticated, but your traveler profile could not be provisioned.');
+            return;
+          }
         }
       }
 
