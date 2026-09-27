@@ -1,0 +1,13 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "expodia-agents",
+  "main": "src/server.ts",
+  "compatibility_date": "2026-09-27",
+  "compatibility_flags": ["nodejs_compat"],
+  "browser": {"binding": "BROWSER", "remote": true},
+  "worker_loaders": [{"binding": "LOADER"}],
+  "ai": {"binding": "AI"},
+  "durable_objects": {"bindings": [{"name": "ExpodiaResearchAgent", "class_name": "ExpodiaResearchAgent"}]},
+  "exports": {"ExpodiaResearchAgent": {"type": "durable-object", "storage": "sqlite"}},
+  "observability": {"enabled": true}
+}
