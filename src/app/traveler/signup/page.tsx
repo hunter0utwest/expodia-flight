@@ -1,9 +1,10 @@
 'use client';
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
-export default function TravelerSignupPage() {
+export default function TravelerSignupPage() { const router=useRouter();
   const [error, setError] = useState(''); const [message, setMessage] = useState(''); const [loading, setLoading] = useState(false);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setError(''); setMessage(''); setLoading(true);
@@ -14,7 +15,7 @@ export default function TravelerSignupPage() {
     if(data.user&&data.session){
       const {error:profileError}=await supabase.from('traveler_profiles').insert({user_id:data.user.id,username});
       if(profileError){await supabase.auth.signOut();setError(profileError.code==='23505'?'That username is already in use.':profileError.message);setLoading(false);return;}
-      window.location.assign('/traveler'); return;
+      router.push('/traveler'); return;
     }
     setMessage('Your account has been created. Check your email if confirmation is required, then sign in to finish setting up your traveler space.'); setLoading(false);
   }
