@@ -22,23 +22,22 @@ export default function AssistantPage(){
     }
     const {data:agents}=await supabase.from('agent_presence').select('user_id,display_name').eq('status','ONLINE').gte('last_seen_at',new Date(Date.now()-120000).toISOString()).order('last_seen_at',{ascending:false}).limit(1);
     const selected=agents?.[0];
-    const {data:conversation,error}=await supabase.from('support_conversations').insert({
-      subject:(request.trim() || 'Traveler support request').slice(0,200),
-      status:selected?'OPEN':'PENDING',
-      created_by:user.id,
-      assigned_agent_id:selected?.user_id ?? null,
-      category:'GENERAL',
-      priority:'NORMAL'
-    }).select('id').single();
-    if(error || !conversation){
+    const {data:conversationId,error}=await supabase.rpc('create_traveler_support_conversation',{
+      p_subject:(request.trim() || 'Traveler support request').slice(0,200),
+      p_agent_user_id:selected?.user_id ?? null
+    });
+    if(error || !conversationId){
       setReply('I could not open the support handoff right now. Please try again.');
       setLoading(false);
       return;
     }
-    await supabase.from('support_conversation_participants').insert([
-      {conversation_id:conversation.id,user_id:user.id,participant_type:'TRAVELER'},
-      ...(selected?[{conversation_id:conversation.id,user_id:selected.user_id,participant_type:'AGENT'}]:[])
-    ]);
+    if(request.trim()){
+      await supabase.from('support_messages').insert({
+        conversation_id:conversationId,
+        sender_user_id:user.id,
+        body:request.trim()
+      });
+    }
     if(selected){
       setReply(`I found an available Expodia travel professional. ${selected.display_name || 'They'} can now take over this conversation.`);
     }else{
