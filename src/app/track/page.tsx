@@ -1,21 +1,36 @@
+'use client';
+
 import Link from 'next/link';
+import { FormEvent, useState } from 'react';
+
+type TrackingResponse = { status: 'ready' | 'processing' | 'unavailable'; message: string; flight?: { flightNumber: string; status: string; origin: string; destination: string; departure?: string; arrival?: string } };
 
 export default function PublicTrackingPage() {
+  const [flightNumber, setFlightNumber] = useState('');
+  const [result, setResult] = useState<TrackingResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function track(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const value = flightNumber.trim().toUpperCase();
+    if (!value) return;
+    setLoading(true); setResult(null);
+    try {
+      const response = await fetch(`/api/flight-tracking?flight=${encodeURIComponent(value)}`, { cache: 'no-store' });
+      setResult(await response.json() as TrackingResponse);
+    } catch {
+      setResult({ status: 'unavailable', message: 'Flight tracking is currently unavailable.' });
+    } finally { setLoading(false); }
+  }
+
   return (
     <main className="publicPage">
-      <header className="publicHeader">
-        <Link href="/" className="publicBrand">Expodia Flights</Link>
-        <nav className="publicNav"><Link href="/explore">Explore</Link><Link href="/aviation-public">Aviation</Link><Link href="/traveler">My journeys</Link><Link href="/login" className="agentAccess">Agent Access</Link></nav>
-      </header>
+      <header className="publicHeader"><Link href="/" className="publicBrand">Expodia Flights</Link><nav className="publicNav"><Link href="/explore">Explore</Link><Link href="/aviation-public">Aviation</Link><Link href="/traveler">My journeys</Link><Link href="/login" className="agentAccess">Agent Access</Link></nav></header>
       <section className="publicSection publicPageIntro">
-        <div className="publicEyebrow">FLIGHT TRACKING</div>
-        <h1>Follow a flight.</h1>
-        <p>Enter a flight identifier to retrieve operational information from an authorized tracking source. Expodia will never turn missing live data into a guessed status.</p>
-        <form className="trackForm">
-          <input aria-label="Flight number" placeholder="Flight number, e.g. BA75" />
-          <button className="publicPrimary" type="button" disabled>Track when live source is connected</button>
-        </form>
-        <div className="truthNote">Live tracking is currently unavailable until an approved tracking provider is configured.</div>
+        <div className="publicEyebrow">FLIGHT TRACKING</div><h1>Follow a flight.</h1><p>Enter a flight number to retrieve its current operational information.</p>
+        <form className="trackForm" onSubmit={track}><input aria-label="Flight number" placeholder="Flight number, e.g. BA75" value={flightNumber} onChange={(event) => setFlightNumber(event.target.value)} autoCapitalize="characters" /><button className="publicPrimary" type="submit" disabled={loading || !flightNumber.trim()}>{loading ? 'Processing…' : 'Track flight'}</button></form>
+        {result?.status === 'ready' && result.flight && <article className="trackingResult"><div className="publicEyebrow">FLIGHT</div><h2>{result.flight.flightNumber}</h2><strong>{result.flight.status}</strong><p>{result.flight.origin} → {result.flight.destination}</p>{result.flight.departure && <small>Departure: {result.flight.departure}</small>}{result.flight.arrival && <small>Arrival: {result.flight.arrival}</small>}</article>}
+        {result && result.status !== 'ready' && <div className="truthNote" role="status">{result.message}</div>}
       </section>
     </main>
   );
