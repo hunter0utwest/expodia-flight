@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getSupabaseConfig } from './lib/supabase/config';
 
-const publicPaths = ['/', '/explore', '/track', '/aviation-public', '/traveler', '/traveler/login', '/traveler/signup', '/assistant', '/login'];
+const publicPaths = ['/', '/explore', '/track', '/aviation-public', '/traveler', '/traveler/login', '/traveler/signup', '/assistant', '/login', '/access'];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some((path) => pathname === path || pathname.startsWith('/verify/'));
@@ -42,6 +42,21 @@ export async function middleware(request: NextRequest) {
       travelerUrl.pathname = '/traveler';
       travelerUrl.search = '';
       return NextResponse.redirect(travelerUrl);
+    }
+
+    const { data: security } = await supabase
+      .from('agent_security_profiles')
+      .select('session_expires_at')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (security?.session_expires_at && new Date(security.session_expires_at).getTime() <= Date.now()) {
+      await supabase.auth.signOut();
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = '/access';
+      loginUrl.search = '';
+      loginUrl.searchParams.set('expired', '1');
+      return NextResponse.redirect(loginUrl);
     }
   }
 
