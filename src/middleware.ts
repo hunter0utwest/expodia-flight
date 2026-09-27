@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getSupabaseConfig } from './lib/supabase/config';
 
-const publicPaths = ['/', '/explore', '/track', '/aviation-public', '/traveler', '/assistant', '/login'];
+const publicPaths = ['/', '/explore', '/track', '/aviation-public', '/traveler', '/traveler/login', '/traveler/signup', '/assistant', '/login'];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some((path) => pathname === path || pathname.startsWith('/verify/'));
@@ -26,11 +26,23 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const pathname = request.nextUrl.pathname;
 
-  if (!user && !isPublicPath(pathname)) {
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = '/login';
-    loginUrl.searchParams.set('next', pathname);
-    return NextResponse.redirect(loginUrl);
+  if (!isPublicPath(pathname)) {
+    if (!user) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = '/login';
+      loginUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Authentication alone is not agent authorization. Traveler accounts must
+    // never inherit access to the private agent workspace.
+    const { data: agent } = await supabase.from('agents').select('id').eq('id', user.id).maybeSingle();
+    if (!agent) {
+      const travelerUrl = request.nextUrl.clone();
+      travelerUrl.pathname = '/traveler';
+      travelerUrl.search = '';
+      return NextResponse.redirect(travelerUrl);
+    }
   }
 
   return response;
