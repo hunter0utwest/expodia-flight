@@ -10,6 +10,7 @@ const navigation = [
   ['Documents', '/documents'],
   ['Flight tracking', '/tracking'],
   ['Aviation intelligence', '/aviation'],
+  ['Industry leadership', 'https://www.expediagroup.com/en-us/about-us/leadership'],
   ['Notifications', '/notifications'],
   ['Audit', '/audit'],
 ] as const;
@@ -21,7 +22,14 @@ export function AppShell({ children, currentPath }: { children: React.ReactNode;
         <div className="brand">Expodia Flights</div>
         <nav className="nav">
           {navigation.map(([label, href]) => (
-            <Link key={href} href={href} aria-current={currentPath === href ? 'page' : undefined}>{label}</Link>
+            <Link
+              key={href}
+              href={href}
+              aria-current={currentPath === href ? 'page' : undefined}
+              {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            >
+              {label}
+            </Link>
           ))}
         </nav>
       </aside>
