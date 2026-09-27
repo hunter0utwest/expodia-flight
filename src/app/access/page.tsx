@@ -12,6 +12,8 @@ export default function AccessPage() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [securityPin, setSecurityPin] = useState('');
+  const [sessionDuration, setSessionDuration] = useState('43200');
 
   async function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -116,7 +118,7 @@ export default function AccessPage() {
     }
 
     const supabase = createSupabaseBrowserClient();
-    const { data: valid, error: codeError } = await supabase.rpc('verify_agent_registration_code', { p_code: code });
+    const { data: valid, error: codeError } = await supabase.rpc('verify_agent_registration_code', { p_code: code, p_email: email });
 
     if (codeError || valid !== true) {
       setError('That referral code is invalid, expired, revoked, or has already been used.');
@@ -125,6 +127,11 @@ export default function AccessPage() {
     }
 
     const password = String(form.get('professionalPassword') ?? '');
+    if (!/^\\d{4}$/.test(securityPin)) {
+      setError('Create a four-digit security PIN.');
+      setLoading(false);
+      return;
+    }
     if (password.length < 8) {
       setError('Create a password of at least 8 characters.');
       setLoading(false);
@@ -162,6 +169,17 @@ export default function AccessPage() {
       return;
     }
 
+    const { data: securitySaved } = await supabase.rpc('set_agent_security', {
+      p_pin: securityPin,
+      p_session_duration_minutes: Number(sessionDuration),
+    });
+    if (securitySaved !== true) {
+      await supabase.auth.signOut();
+      setError('The professional account was created but its security setup could not be completed. Contact an administrator.');
+      setLoading(false);
+      return;
+    }
+
     router.replace('/');
   }
 
@@ -170,7 +188,7 @@ export default function AccessPage() {
       <section className="verificationCard travelerAuthCard">
         <div className="verificationBadge">EXPODIA</div>
         <h1 style={{ marginTop: 12 }}>Access</h1>
-        <p>Sign in to continue. Expodia automatically opens the correct traveler or professional workspace for your account.</p>
+        <p>Sign in to continue. Expodia automatically recognizes whether your account is a traveler or an authorized professional.</p>
 
         {!signUpMode ? (
           <form onSubmit={signIn} style={{ display: 'grid', gap: 16, marginTop: 24 }}>
@@ -203,6 +221,8 @@ export default function AccessPage() {
                 <label>Email<input name="professionalEmail" type="email" autoComplete="email" required /></label>
                 <label>Short message<textarea name="shortMessage" rows={4} maxLength={500} placeholder="Briefly tell Expodia about your experience." required /></label>
                 <label>Password<input name="professionalPassword" type="password" autoComplete="new-password" minLength={8} required /></label>
+                <label>4-digit security PIN<input value={securityPin} onChange={(e) => setSecurityPin(e.target.value.replace(/\\D/g, '').slice(0, 4))} inputMode="numeric" autoComplete="off" maxLength={4} placeholder="••••" required /></label>
+                <label>Professional session period<select value={sessionDuration} onChange={(e) => setSessionDuration(e.target.value)}><option value="1440">24 hours</option><option value="10080">7 days</option><option value="43200">30 days</option><option value="129600">90 days</option></select></label>
                 <button className="primary" type="submit" disabled={loading}>{loading ? 'Verifying invitation…' : 'Create professional account'}</button>
                 <button className="publicSecondary" type="button" onClick={() => setProfessionalMode(false)}>Back to traveler sign up</button>
               </form>
