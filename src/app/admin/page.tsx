@@ -18,6 +18,7 @@ export default function AdminPage(){
   supabase.from('partner_onboarding_tasks').select('id,provider_id,task_type,status,requires_human,created_at').order('created_at',{ascending:false}).limit(100),
   supabase.from('agent_applications').select('user_id,short_message,created_at,agents(display_name,email)').order('created_at',{ascending:false})
  ]);setCodes((c||[]) as Code[]);const {data:setting}=await supabase.from('management_settings').select('value').eq('key','partner_account_email').maybeSingle();setPartnerEmail(setting?.value||'');setProviders((p||[]) as Provider[]);setTasks((t||[]) as Task[]);setApplications((a||[]) as unknown as App[]);setLoading(false);}
+ // eslint-disable-next-line react-hooks/set-state-in-effect
  useEffect(()=>{void load()},[]);
  async function issue(e:FormEvent){e.preventDefault();setMessage('');setNewCode('');const expiry=new Date(Date.now()+Number(days)*86400000).toISOString();const {data,error}=await supabase.rpc('create_agent_referral_code',{p_intended_email:email.trim()||null,p_expires_at:expiry,p_max_redemptions:Number(max)});if(error||!data?.[0]){setMessage(error?.message||'Could not issue referral code.');return}setNewCode(data[0].referral_code);setEmail('');void load();}
  async function revoke(id:string){const {error}=await supabase.from('agent_registration_codes').update({revoked_at:new Date().toISOString()}).eq('id',id);setMessage(error?'Could not revoke code.':'Referral code revoked.');void load();}
