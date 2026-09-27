@@ -35,12 +35,12 @@ export default function AuthCallbackPage() {
       // traveler workspace can recognize the account. This is provisioning,
       // not authorization; middleware still authorizes by database role.
       if (user.user_metadata?.access_type === 'traveler') {
-        const username = String(user.user_metadata?.username ?? '').trim();
-        if (username) {
-          const { error: profileError } = await supabase.from('traveler_profiles').upsert(
-            { user_id: user.id, username },
-            { onConflict: 'user_id' }
-          );
+        const requestedUsername = String(user.user_metadata?.username ?? '').trim();
+        const username = requestedUsername || `traveler_${user.id.replace(/-/g, '').slice(0, 10)}`;
+        const { error: profileError } = await supabase.from('traveler_profiles').upsert(
+          { user_id: user.id, username },
+          { onConflict: 'user_id' }
+        );
           if (profileError) {
             if (active) setError('Your account was authenticated, but your traveler profile could not be provisioned.');
             return;
