@@ -77,7 +77,7 @@ export default function TravelerProfilePage() {
           <section className="travelerProfileCard">
             <div className="publicEyebrow">ACCOUNT</div>
             <h2>Your traveler space</h2>
-            <p>This is your private Expodia account area. Your profile page does not display other travelers' profiles.</p>
+            <p>This is your private Expodia account area. Your profile page does not display other traveler profiles.</p>
             <Link className="publicSecondary" href="/traveler">Return to home</Link>
           </section>
 
