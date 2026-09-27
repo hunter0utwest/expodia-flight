@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
@@ -9,7 +9,7 @@ type Profile = { username: string };
 
 export default function TravelerProfilePage() {
   const router = useRouter();
-  const supabase = createSupabaseBrowserClient();
+  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [email, setEmail] = useState('');
   const [pin, setPin] = useState('');
