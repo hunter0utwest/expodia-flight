@@ -12,7 +12,7 @@ export default function HomePage(){
     <header className="publicHeader">
       <Link href="/" className="publicBrand">Expodia Flights</Link>
       <nav className="publicNav" aria-label="Main navigation">
-        <Link href="/explore">Explore</Link><Link href="/track">Track</Link><Link href="/traveler">Plan</Link>
+        <Link href="/explore">Explore</Link><Link href="/marketplace">Marketplace</Link><Link href="/track">Track</Link><Link href="/traveler">Plan</Link>
         <Link href="/assistant">Assistant</Link><Link href="/access" className="agentAccess">Sign in</Link>
       </nav>
     </header>
