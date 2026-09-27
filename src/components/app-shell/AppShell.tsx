@@ -9,6 +9,7 @@ const navigation = [
   ['Tickets', '/tickets'],
   ['Documents', '/documents'],
   ['Flight tracking', '/tracking'],
+  ['Aviation intelligence', '/aviation'],
   ['Notifications', '/notifications'],
   ['Audit', '/audit'],
 ] as const;
