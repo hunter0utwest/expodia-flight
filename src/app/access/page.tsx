@@ -15,6 +15,7 @@ export default function AccessPage() {
   const [securityPin, setSecurityPin] = useState('');
   const [sessionDuration, setSessionDuration] = useState('43200');
   const [agentPinRequired, setAgentPinRequired] = useState(false);
+  const [agentSecuritySetup, setAgentSecuritySetup] = useState(false);
   const [agentPin, setAgentPin] = useState('');
 
   async function signIn(event: FormEvent<HTMLFormElement>) {
@@ -50,7 +51,9 @@ export default function AccessPage() {
         return;
       }
 
-      router.replace('/');
+      setAgentSecuritySetup(true);
+      setLoading(false);
+      return;
       return;
     }
 
@@ -62,6 +65,29 @@ export default function AccessPage() {
     await supabase.auth.signOut();
     setError('This account is not assigned to an Expodia access type yet. Contact Expodia support.');
     setLoading(false);
+  }
+
+  async function saveInitialAgentSecurity(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(''); setMessage(''); setLoading(true);
+    if (!/^\d{4}$/.test(securityPin)) {
+      setError('Create a four-digit security PIN.');
+      setLoading(false);
+      return;
+    }
+    const supabase = createSupabaseBrowserClient();
+    const { data: saved } = await supabase.rpc('set_agent_security', {
+      p_pin: securityPin,
+      p_session_duration_minutes: Number(sessionDuration),
+    });
+    if (saved !== true) {
+      await supabase.auth.signOut();
+      setAgentSecuritySetup(false);
+      setError('Security setup could not be completed. Please sign in again.');
+      setLoading(false);
+      return;
+    }
+    router.replace('/');
   }
 
   async function verifyAgentPin(event: FormEvent<HTMLFormElement>) {
@@ -228,7 +254,14 @@ export default function AccessPage() {
         <p>Sign in to continue. Expodia automatically recognizes whether your account is a traveler or an authorized professional.</p>
 
         {!signUpMode ? (
-          agentPinRequired ? (
+          agentSecuritySetup ? (
+            <form onSubmit={saveInitialAgentSecurity} style={{ display: 'grid', gap: 16, marginTop: 24 }}>
+              <p><strong>Professional security setup.</strong> Your professional account needs a four-digit security PIN before you can enter the workspace.</p>
+              <label>4-digit security PIN<input value={securityPin} onChange={(e) => setSecurityPin(e.target.value.replace(/\D/g, '').slice(0, 4))} inputMode="numeric" autoComplete="off" maxLength={4} placeholder="••••" required /></label>
+              <label>Professional session period<select value={sessionDuration} onChange={(e) => setSessionDuration(e.target.value)}><option value="1440">24 hours</option><option value="10080">7 days</option><option value="43200">30 days</option><option value="129600">90 days</option></select></label>
+              <button className="primary" type="submit" disabled={loading}>{loading ? 'Saving…' : 'Save security settings'}</button>
+            </form>
+          ) : agentPinRequired ? (
             <form onSubmit={verifyAgentPin} style={{ display: 'grid', gap: 16, marginTop: 24 }}>
               <p><strong>Professional security check.</strong> Enter your four-digit security PIN to open the Expodia professional workspace.</p>
               <label>Security PIN<input value={agentPin} onChange={(e) => setAgentPin(e.target.value.replace(/\D/g, '').slice(0, 4))} inputMode="numeric" autoComplete="one-time-code" maxLength={4} placeholder="••••" required /></label>
