@@ -5,7 +5,7 @@ export default function ExplorePage() {
     <main className="publicPage">
       <header className="publicHeader">
         <Link href="/" className="publicBrand">Expodia Flights</Link>
-        <nav className="publicNav"><Link href="/">Home</Link><Link href="/tracking">Track</Link><Link href="/aviation">Aviation</Link><Link href="/traveler">My journeys</Link><Link href="/login" className="agentAccess">Agent Access</Link></nav>
+        <nav className="publicNav"><Link href="/">Home</Link><Link href="/track">Track</Link><Link href="/aviation-public">Aviation</Link><Link href="/traveler">My journeys</Link><Link href="/login" className="agentAccess">Agent Access</Link></nav>
       </header>
       <section className="publicSection publicPageIntro">
         <div className="publicEyebrow">FLIGHT DISCOVERY</div>
@@ -19,8 +19,8 @@ export default function ExplorePage() {
         </div>
       </section>
       <section className="publicSection compactGrid">
-        <Link href="/tracking" className="discoveryCard"><span>TRACK</span><strong>Follow a flight</strong><small>Flight status and movement when live data is available →</small></Link>
-        <Link href="/aviation" className="discoveryCard"><span>AVIATION</span><strong>See what is changing</strong><small>Airlines, routes, airports, aircraft and verified developments →</small></Link>
+        <Link href="/track" className="discoveryCard"><span>TRACK</span><strong>Follow a flight</strong><small>Flight status and movement when live data is available →</small></Link>
+        <Link href="/aviation-public" className="discoveryCard"><span>AVIATION</span><strong>See what is changing</strong><small>Airlines, routes, airports, aircraft and verified developments →</small></Link>
         <Link href="/traveler" className="discoveryCard"><span>JOURNEYS</span><strong>Keep your flights</strong><small>Save or import flight history and follow important journeys →</small></Link>
       </section>
     </main>
