@@ -13,8 +13,8 @@ Status meanings: LIVE = implemented and backed by real data/infrastructure; PART
 | AI web research | PARTIAL | OpenAI web_search | Configure key and production model; validate citations |
 | Persistent AI conversation | READY | Supabase traveler_ai_conversations/messages | Migration applied live; add history UI |
 | Realtime human support | PARTIAL | Supabase Realtime + support tables | Verify RLS/RPC and realtime subscriptions end-to-end |
-| Internal browser research workers | READY | Separate Cloudflare Agents worker | Install/deploy worker and configure Browser Run + Worker Loader |
-| Long-running research | READY | Cloudflare Agents Durable Objects/fibers | Add scheduled/background jobs |
+| Internal browser research workers | READY | Separate Cloudflare Agents worker | Worker is configured with Browser Run, Worker Loader, Workers AI and Durable Object storage; deployment/account binding still requires Cloudflare credentials |
+| Long-running research | READY | Cloudflare Agents Durable Objects/fibers | Durable Agent class is configured; add scheduled/background jobs as workflows mature |
 | Provider browser workflows | READY | Cloudflare Browser Run + human approval | Provider-specific workflows and explicit human authorization |
 | Group travel chat | PARTIAL | Supabase groups/messages | Add realtime, research persistence and richer sourced cards |
 | Travel images from research | PLANNED | Authorized source feeds / image search | Add source-aware image retrieval; never invent property images |
@@ -45,7 +45,7 @@ Status meanings: LIVE = implemented and backed by real data/infrastructure; PART
 | Video/avatar content | PLANNED | HeyGen/Runway/Higgsfield | Use for content/education, not operational truth |
 | Design system | PARTIAL | Existing Next.js UI + Figma/Canva | Consolidate components and responsive states |
 | Deployment | READY | Cloudflare Workers | Verify main worker build/deploy; Netlify remains optional |
-| CI | PARTIAL | GitHub Actions | Verify current main after recent commits |
+| CI | PARTIAL | GitHub Actions | Agents Worker typecheck workflow added; current run still needs to execute |
 
 ## Architectural rule
 
