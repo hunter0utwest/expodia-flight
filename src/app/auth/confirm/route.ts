@@ -6,7 +6,8 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const tokenHash = url.searchParams.get('token_hash');
   const type = url.searchParams.get('type') as EmailOtpType | null;
-  const next = url.searchParams.get('next') || '/traveler';
+  const requestedNext = url.searchParams.get('next') || '/traveler';
+  const next = requestedNext.startsWith('/') && !requestedNext.startsWith('//') ? requestedNext : '/traveler';
 
   if (!tokenHash || !type) {
     return NextResponse.redirect(new URL('/auth/callback?error=missing_confirmation', url.origin));
