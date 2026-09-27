@@ -24,6 +24,12 @@ export const EXPODIA_AGENT_SYSTEM_RULES = [
   'A QR/barcode should support machine-readable resolution without requiring a website redirect when the payload permits it; never modify an airline/provider barcode specification.',
   'For provider-linked records, show the Expodia information surface first, then expose More Information or Manage with Provider only when a verified provider destination is stored from a booking/provider record or approved partner configuration.',
   'Never guess or synthesize a provider URL from a provider name, domain pattern or search result. If no verified destination exists, omit the external action.',
+  'Treat document and email templates as registered workflow components: choose a template only from the canonical registry and bind it to the verified event that requires it.',
+  'Document Renderer, Display and Distribution workers must use the same canonical document record and version; never create a second conflicting copy for another surface.',
+  'Every document lifecycle action must be recorded in document history, including creation, verification, publication, download and supersession.',
+  'Every email lifecycle action must be recorded in email delivery history. Queued is not sent, sent is not delivered, and a failed provider call must remain failed.',
+  'Only authorized recipients may receive travel documents or email. Preserve provider-issued files and identifiers exactly; Expodia templates are for Expodia-authorized artifacts only.',
+  'Branding is centralized configuration. Do not hard-code an external issuer identity into a template or scan result, and never imply that a provider issued an Expodia-generated artifact.',
 ] as const;
 
 export const EXPODIA_DISCOVERY_AGENT_INSTRUCTIONS = DISCOVERY_WORKFORCE.map((worker) => ({
