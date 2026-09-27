@@ -116,7 +116,7 @@ export async function POST(request: Request) {
       mime_type: 'application/pdf',
       content_hash: hash,
       issued_at: issuedAt,
-      storage_path: `\${booking.id}/receipts/\${documentNumber}.pdf`,
+      storage_path: `${booking.id}/receipts/${documentNumber}.pdf`,
       metadata,
     })
     .select('id, document_number, document_type, document_version, status, mime_type, content_hash, issued_at')
