@@ -204,6 +204,8 @@ export default function AccessPage() {
       return;
     }
 
+    await supabase.rpc('record_agent_application', { p_short_message: shortMessage });
+
     const { data: securitySaved } = await supabase.rpc('set_agent_security', {
       p_pin: securityPin,
       p_session_duration_minutes: Number(sessionDuration),
