@@ -63,3 +63,22 @@ $$;
 
 revoke execute on function public.create_agent_referral_code(text,timestamptz,integer) from public, anon;
 grant execute on function public.create_agent_referral_code(text,timestamptz,integer) to authenticated;
+
+
+grant select on public.agent_applications to authenticated;
+drop policy if exists "admins read agent applications" on public.agent_applications;
+create policy "admins read agent applications"
+on public.agent_applications for select to authenticated
+using (exists (select 1 from public.company_admins a where a.user_id = (select auth.uid())));
+
+grant select on public.agent_registration_codes to authenticated;
+drop policy if exists "admins read referral codes" on public.agent_registration_codes;
+create policy "admins read referral codes"
+on public.agent_registration_codes for select to authenticated
+using (exists (select 1 from public.company_admins a where a.user_id = (select auth.uid())));
+
+drop policy if exists "admins update referral codes" on public.agent_registration_codes;
+create policy "admins update referral codes"
+on public.agent_registration_codes for update to authenticated
+using (exists (select 1 from public.company_admins a where a.user_id = (select auth.uid())))
+with check (exists (select 1 from public.company_admins a where a.user_id = (select auth.uid())));
