@@ -33,10 +33,16 @@ export default function AccessPage() {
       return;
     }
 
-    const [{ data: agent }, { data: traveler }] = await Promise.all([
+    const [{ data: agent }, { data: traveler }, { data: admin }] = await Promise.all([
       supabase.from('agents').select('id').eq('id', data.user.id).maybeSingle(),
       supabase.from('traveler_profiles').select('user_id').eq('user_id', data.user.id).maybeSingle(),
+      supabase.from('company_admins').select('user_id').eq('user_id', data.user.id).maybeSingle(),
     ]);
+
+    if (admin) {
+      router.replace('/admin');
+      return;
+    }
 
     if (agent) {
       const { data: security } = await supabase
