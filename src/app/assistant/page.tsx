@@ -12,6 +12,7 @@ export default function AssistantPage(){
   const [request,setRequest]=useState('');
   const [reply,setReply]=useState('Tell me what you are here to do. I can help you find the right part of Expodia and, when needed, connect you with an available travel professional.');
   const [loading,setLoading]=useState(false);
+  const [sources,setSources]=useState<string[]>([]);
 
   async function connectHuman(){
     setLoading(true);
@@ -50,11 +51,20 @@ export default function AssistantPage(){
     setLoading(false);
   }
 
-  function submit(event:FormEvent){
+  async function submit(event:FormEvent){
     event.preventDefault();
     const value=request.trim();
     if(!value)return;
-    setReply(`I understand that you are planning: “${value}”. I can help organise the relevant flight, stay, event, transport and travel-requirement pieces. If this needs a travel professional, I can route you to one when an eligible professional is online.`);
+    setLoading(true); setSources([]);
+    try {
+      const response=await fetch('/api/travel-intelligence',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:value,mode:'assistant'})});
+      const data=await response.json();
+      if(!response.ok){setReply(data.error||'Travel research is temporarily unavailable.');return;}
+      setReply(data.answer||'No verified answer was returned.');
+      setSources(Array.isArray(data.sources)?data.sources:[]);
+    } catch {
+      setReply('Travel research is temporarily unavailable.');
+    } finally { setLoading(false); }
   }
 
   return <main className="publicPage">
@@ -63,9 +73,9 @@ export default function AssistantPage(){
       <div className="assistantBadge"><span/> EXPODIA VIRTUAL AGENT</div>
       <h1>What are you here to do?</h1>
       <p>Tell Expodia in ordinary language. I can guide you through planning, tracking and support. I will not invent availability, prices, bookings or ticket status.</p>
-      <form className="assistantComposer" onSubmit={submit}><input value={request} onChange={event=>setRequest(event.target.value)} placeholder="I am planning…"/><button className="publicPrimary" type="submit">Continue</button></form>
+      <form className="assistantComposer" onSubmit={submit}><input value={request} onChange={event=>setRequest(event.target.value)} placeholder="Ask Expodia to research something…"/><button className="publicPrimary" type="submit" disabled={loading}>{loading?'Researching…':'Research'}</button></form>
       <div className="assistantSuggestions">{suggestions.map(item=><button key={item} onClick={()=>{setRequest(item);setReply(`I can help you organise “${item}”. If a travel professional is needed, I can route the conversation to an eligible professional who is online.`);}}>{item}</button>)}</div>
-      <div className="assistantReply">{reply}</div>
+      <div className="assistantReply">{reply}</div>{sources.length>0&&<div className="assistantSources"><strong>Sources</strong>{sources.map(source=><a key={source} href={source} target="_blank" rel="noreferrer">{source}</a>)}</div>
       <div className="assistantHandoff"><div><strong>Need a travel professional?</strong><span>Expodia can check for an eligible professional who is currently online and route the conversation without asking you for an agent ID.</span></div><button className="publicSecondary" type="button" onClick={connectHuman} disabled={loading}>{loading?'Checking…':'Connect me'}</button></div>
       <Link className="publicSecondary assistantPlanLink" href="/traveler">Open My Plan</Link>
     </section>
