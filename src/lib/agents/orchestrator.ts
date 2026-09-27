@@ -22,7 +22,12 @@ export function routePostBookingWork(context: OrchestrationContext): AgentJob[] 
   return [
     createAgentJob('payment_worker', 'verify_payment', {}, context),
     createAgentJob('ticketing_worker', 'verify_ticketing', {}, context),
+    createAgentJob('document_intelligence', 'identify_required_documents', {}, context),
+    createAgentJob('document_retrieval', 'retrieve_provider_documents', {}, context),
+    createAgentJob('document_verification', 'verify_document_identifiers', {}, context),
     createAgentJob('document_worker', 'prepare_documents', {}, context),
+    createAgentJob('document_renderer', 'render_approved_templates', {}, context),
+    createAgentJob('document_distribution', 'deliver_documents', {}, context),
     createAgentJob('communication_worker', 'notify_confirmed_events', {}, context),
     createAgentJob('integrity_worker', 'post_booking_integrity_check', {}, context),
   ];
@@ -30,6 +35,8 @@ export function routePostBookingWork(context: OrchestrationContext): AgentJob[] 
 export function routeTicketedTravel(context: OrchestrationContext): AgentJob[] {
   return [
     createAgentJob('flight_operations', 'track_flight', {}, context),
+    createAgentJob('tracking_worker', 'publish_verified_tracking_state', {}, context),
+    createAgentJob('trip_context_worker', 'evaluate_next_travel_context', {}, context),
     createAgentJob('checkin_worker', 'monitor_checkin', {}, context),
     createAgentJob('wallet_worker', 'evaluate_wallet_eligibility', {}, context),
   ];
