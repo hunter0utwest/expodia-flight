@@ -44,6 +44,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(travelerUrl);
     }
 
+    if (admin && !agent) return response;
+
     const { data: security } = await supabase
       .from('agent_security_profiles')
       .select('session_expires_at')
