@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 const suggestions=['I want to book a flight','I need help with an existing trip','I need a place to stay','I am planning a trip with family'];
 
 export default function AssistantPage(){
+  const router=useRouter();
   const [request,setRequest]=useState('');
   const [reply,setReply]=useState('Tell me what you are here to do. I can help you find the right part of Expodia and, when needed, connect you with an available travel professional.');
   const [loading,setLoading]=useState(false);
@@ -40,8 +42,10 @@ export default function AssistantPage(){
     }
     if(selected){
       setReply(`I found an available Expodia travel professional. ${selected.display_name || 'They'} can now take over this conversation.`);
+      router.push(`/traveler/inbox?id=${conversationId}`);
     }else{
       setReply('No travel professional is available right now. Your request is in the support queue. You can keep planning while Expodia waits for an available professional.');
+      router.push(`/traveler/inbox?id=${conversationId}`);
     }
     setLoading(false);
   }
