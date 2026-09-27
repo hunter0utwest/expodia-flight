@@ -38,3 +38,82 @@ input::placeholder { color:#9a9a94; } input:focus,select:focus { border-color:#1
 .verificationDetails dt { color:var(--muted); font-size:11px; } .verificationDetails dd { margin:0; font-size:12px; font-weight:650; overflow-wrap:anywhere; } .verificationNote { font-size:11px; }
 @media (max-width:1024px) { .shell { grid-template-columns:76px 1fr; } .sidebar { padding-inline:9px; } .brand { font-size:0; text-align:center; padding-inline:0; } .brand::before { content:'E'; font-size:18px; } .brand::after { display:none; } .nav a { font-size:0; text-align:center; } .nav a::first-letter { font-size:15px; } .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .header { padding-inline:24px; } .content { padding-inline:24px; } }
 @media (max-width:767px) { .shell { display:block; } .sidebar { display:none; } .header { height:62px; padding:0 17px; } .content { padding:24px 16px 40px; } .pageIntro { display:block; margin-bottom:22px; } .pageIntro .primary,.pageIntro .secondary { margin-top:18px; width:100%; } .grid,.formGrid { grid-template-columns:1fr; } h1 { font-size:25px; } .flightCardTop,.cartItemHeader,.resultsHeader,.flightCardFooter,.cartFooter { display:block; } .priceBlock { text-align:left; margin-top:12px; } .segment { grid-template-columns:1fr; } .segmentArrow { display:none !important; } .segmentFlight { text-align:left; } .flightCardFooter .secondary { width:100%; margin-top:12px; } .verificationCard { padding:25px; } .verificationDetails div { grid-template-columns:1fr; gap:5px; } }
+
+.publicHome,.publicPage { min-height:100vh; background:#f5f5f3; color:#101010; }
+.publicHeader { min-height:72px; padding:0 5vw; display:flex; align-items:center; justify-content:space-between; gap:24px; border-bottom:1px solid #e2e2dd; background:rgba(255,255,255,.88); backdrop-filter:blur(14px); position:sticky; top:0; z-index:20; }
+.publicBrand { color:#101010; text-decoration:none; font-size:18px; font-weight:780; letter-spacing:-.04em; }
+.publicNav { display:flex; align-items:center; gap:20px; }
+.publicNav a { color:#555550; text-decoration:none; font-size:12px; font-weight:650; }
+.publicNav a:hover { color:#101010; }
+.publicNav .agentAccess { color:#fff; background:#111; padding:9px 13px; border-radius:7px; }
+.hero { min-height:620px; display:grid; grid-template-columns:minmax(0,1fr) minmax(380px,.9fr); gap:6vw; align-items:center; padding:7vw 7vw 6vw; background:#fff; border-bottom:1px solid #e2e2dd; }
+.heroCopy { max-width:690px; }
+.publicEyebrow { font-size:10px; font-weight:780; letter-spacing:.12em; color:#777770; }
+.hero h1 { margin:14px 0 18px; font-size:clamp(48px,7vw,92px); line-height:.94; letter-spacing:-.065em; font-weight:760; }
+.heroCopy p { max-width:590px; margin:0; color:#62625c; font-size:16px; line-height:1.65; }
+.heroActions { display:flex; gap:10px; margin-top:30px; }
+.publicPrimary,.publicSecondary { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 17px; border-radius:8px; font-size:12px; font-weight:700; text-decoration:none; border:1px solid #111; }
+.publicPrimary { background:#111; color:#fff; }
+.publicSecondary { background:#fff; color:#111; border-color:#cfcfc9; }
+button.publicPrimary:disabled { opacity:.55; }
+.heroMap { min-height:420px; border-radius:24px; background:#111; position:relative; overflow:hidden; box-shadow:0 22px 60px rgba(0,0,0,.13); }
+.mapGrid { position:absolute; inset:0; opacity:.25; background-image:linear-gradient(rgba(255,255,255,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.2) 1px,transparent 1px); background-size:44px 44px; transform:perspective(500px) rotateX(55deg) scale(1.4); transform-origin:center bottom; }
+.mapOrbit { position:absolute; width:90%; height:46%; border:1px solid rgba(255,255,255,.38); border-radius:50%; left:5%; top:27%; transform:rotate(-18deg); }
+.mapOrbitTwo { transform:rotate(34deg) scaleY(.7); border-color:rgba(255,255,255,.18); }
+.mapOrbit span { position:absolute; width:7px; height:7px; border-radius:50%; background:#fff; right:16%; top:10%; box-shadow:0 0 0 7px rgba(255,255,255,.08); }
+.mapOrbitTwo span { left:22%; top:80%; }
+.mapLabel { position:absolute; color:#fff; font-size:9px; letter-spacing:.12em; font-weight:700; }
+.mapLabelOne { left:24px; top:22px; }
+.mapLabelTwo { right:24px; bottom:22px; color:#999; }
+.publicSection { max-width:1240px; margin:0 auto; padding:90px 6vw; }
+.sectionHeading { display:flex; justify-content:space-between; align-items:end; gap:30px; margin-bottom:28px; }
+.sectionHeading h2,.journeyStrip h2 { margin:10px 0 0; max-width:720px; font-size:34px; line-height:1.08; letter-spacing:-.045em; }
+.sectionHeading a { color:#111; font-size:12px; font-weight:700; text-decoration:none; }
+.discoveryGrid,.journeyCards,.compactGrid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.discoveryCard { min-height:180px; padding:24px; background:#fff; border:1px solid #dfdfda; border-radius:15px; color:#111; text-decoration:none; display:flex; flex-direction:column; gap:12px; transition:transform .16s ease,border-color .16s ease; }
+.discoveryCard:hover { transform:translateY(-2px); border-color:#999; }
+.discoveryCard span { font-size:9px; letter-spacing:.12em; font-weight:800; color:#777770; }
+.discoveryCard strong { font-size:18px; line-height:1.25; letter-spacing:-.025em; }
+.discoveryCard small { margin-top:auto; color:#777770; font-size:11px; line-height:1.45; }
+.truthNote { margin-top:18px; padding:15px 17px; background:#ecece7; border-radius:9px; color:#5c5c56; font-size:11px; line-height:1.6; }
+.journeyStrip { display:flex; align-items:center; justify-content:space-between; gap:30px; padding:60px 7vw; background:#111; color:#fff; }
+.journeyStrip p { max-width:700px; color:#aaa; line-height:1.6; font-size:13px; }
+.journeyStrip .publicSecondary { flex:none; }
+.journeyStrip .publicEyebrow { color:#888; }
+.publicFooter { padding:24px 6vw; display:flex; justify-content:space-between; gap:20px; color:#777770; font-size:10px; }
+.publicFooter a { color:#111; font-weight:700; text-decoration:none; }
+.publicPageIntro { padding-top:80px; }
+.publicPageIntro > h1,.assistantPage h1 { margin:13px 0 14px; font-size:clamp(40px,6vw,70px); line-height:.98; letter-spacing:-.06em; }
+.publicPageIntro > p { max-width:720px; color:#64645e; line-height:1.65; font-size:14px; }
+.searchShell { margin-top:30px; padding:12px; background:#fff; border:1px solid #deded8; border-radius:14px; display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:8px; }
+.searchShell div { min-height:64px; padding:12px 13px; background:#f7f7f4; border-radius:8px; display:grid; gap:5px; }
+.searchShell span { font-size:10px; color:#777; }
+.searchShell strong { font-size:13px; }
+.trackForm { margin-top:30px; max-width:720px; display:grid; grid-template-columns:1fr auto; gap:8px; }
+.journeyAction { margin-top:18px; padding:18px; background:#fff; border:1px solid #deded8; border-radius:12px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.journeyAction div { display:grid; gap:5px; }
+.journeyAction strong { font-size:13px; }
+.journeyAction span { color:#777; font-size:11px; }
+.assistantPage { max-width:760px; margin:0 auto; padding:100px 6vw; }
+.assistantBadge { display:inline-flex; gap:8px; align-items:center; color:#555; font-size:10px; font-weight:800; letter-spacing:.1em; }
+.assistantBadge span { width:7px; height:7px; border-radius:50%; background:#111; }
+.assistantPage > p { color:#666; line-height:1.6; font-size:13px; }
+.assistantOptions { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:28px; }
+.assistantOptions button { min-height:52px; text-align:left; padding:0 15px; border:1px solid #ddd; background:#fff; border-radius:9px; font-size:12px; font-weight:700; }
+.assistantOptions button:hover { border-color:#999; }
+.assistantReply { margin-top:12px; padding:18px; border-radius:10px; background:#111; color:#fff; font-size:12px; line-height:1.6; }
+.virtualAgentLauncher { position:fixed; right:22px; bottom:22px; z-index:30; display:inline-flex; align-items:center; gap:8px; padding:11px 14px; border-radius:999px; background:#111; color:#fff; text-decoration:none; font-size:11px; font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,.18); }
+.agentPulse { width:6px; height:6px; border-radius:50%; background:#fff; }
+@media (max-width:800px) {
+  .publicHeader { padding:0 17px; }
+  .publicNav { gap:12px; overflow:auto; }
+  .publicNav a:nth-child(-n+3) { display:none; }
+  .hero { grid-template-columns:1fr; padding:55px 20px; }
+  .heroMap { min-height:300px; }
+  .discoveryGrid,.journeyCards,.compactGrid { grid-template-columns:1fr; }
+  .sectionHeading,.journeyStrip,.journeyAction { display:block; }
+  .sectionHeading a,.journeyStrip .publicSecondary,.journeyAction .publicSecondary { margin-top:18px; }
+  .searchShell,.trackForm { grid-template-columns:1fr; }
+  .publicFooter { display:grid; }
+  .assistantOptions { grid-template-columns:1fr; }
+}
