@@ -26,11 +26,23 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const pathname = request.nextUrl.pathname;
 
-  if (!user && !isPublicPath(pathname)) {
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = '/login';
-    loginUrl.searchParams.set('next', pathname);
-    return NextResponse.redirect(loginUrl);
+  if (!isPublicPath(pathname)) {
+    if (!user) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = '/login';
+      loginUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Authentication alone is not agent authorization. Traveler accounts must
+    // never inherit access to the private agent workspace.
+    const { data: agent } = await supabase.from('agents').select('id').eq('id', user.id).maybeSingle();
+    if (!agent) {
+      const travelerUrl = request.nextUrl.clone();
+      travelerUrl.pathname = '/traveler';
+      travelerUrl.search = '';
+      return NextResponse.redirect(travelerUrl);
+    }
   }
 
   return response;
