@@ -112,6 +112,18 @@ export async function GET(
         providerBookingId: booking.provider_booking_id,
         pnr: booking.pnr,
         status: booking.status,
+        providerDestination: booking.provider_destination_url ? {
+          url: booking.provider_destination_url,
+          action: 'LEARN_MORE',
+          source: booking.provider_destination_source,
+          verifiedAt: booking.provider_destination_verified_at,
+        } : null,
+        providerManageDestination: booking.provider_manage_url ? {
+          url: booking.provider_manage_url,
+          action: 'MANAGE_BOOKING',
+          source: booking.provider_destination_source,
+          verifiedAt: booking.provider_destination_verified_at,
+        } : null,
       },
       itinerary: (segments ?? []).map((segment) => ({
         airline: segment.carrier_code,
