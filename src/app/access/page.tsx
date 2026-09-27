@@ -127,7 +127,7 @@ export default function AccessPage() {
 
     setLoading(true);
     const supabase = createSupabaseBrowserClient();
-    const { data, error: signupError } = await supabase.auth.signUp({ email, password, options: { data: { username, access_type: 'traveler' } } });
+    const { data, error: signupError } = await supabase.auth.signUp({ email, password, options: { data: { username, access_type: 'traveler' }, emailRedirectTo: `${window.location.origin}/auth/callback?next=/traveler` } });
 
     if (signupError || !data.user) {
       setError(signupError?.message || 'We could not create your traveler account.');
@@ -202,7 +202,7 @@ export default function AccessPage() {
     const { data, error: signupError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName, access_type: 'professional' } },
+      options: { data: { full_name: fullName, access_type: 'professional' }, emailRedirectTo: `${window.location.origin}/auth/callback?next=/access` },
     });
 
     if (signupError || !data.user) {
