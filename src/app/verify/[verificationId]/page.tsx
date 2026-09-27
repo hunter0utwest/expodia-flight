@@ -12,7 +12,6 @@ type VerificationState =
       providerTicketId: string | null;
       eTicketNumber: string | null;
       status: string;
-      passengerName: string | null;
       providerName: string | null;
       pnr: string | null;
       itinerary: Array<{
@@ -42,7 +41,6 @@ export default async function VerificationPage({ params }: { params: Promise<{ v
         <p>This result is resolved from the authoritative Expodia booking and ticket records.</p>
         <dl className="verificationDetails">
           <div><dt>Verification reference</dt><dd>{state.verificationReference}</dd></div>
-          <div><dt>Passenger</dt><dd>{state.passengerName ?? 'Not supplied'}</dd></div>
           <div><dt>Provider</dt><dd>{state.providerName ?? 'Not supplied'}</dd></div>
           <div><dt>Booking reference</dt><dd>{state.pnr ?? 'Not supplied by provider'}</dd></div>
           <div><dt>Provider ticket</dt><dd>{state.providerTicketId ?? 'Not supplied by provider'}</dd></div>
@@ -101,7 +99,6 @@ async function loadVerificationState(verificationId: string): Promise<Verificati
       providerTicketId: body.ticket.providerTicketId,
       eTicketNumber: body.ticket.eTicketNumber,
       status: body.status,
-      passengerName: body.passenger?.name ?? null,
       providerName: body.booking?.providerName ?? null,
       pnr: body.booking?.pnr ?? null,
       itinerary: (body.itinerary ?? []).map((segment: { airline: string; flightNumber: string; origin: string; destination: string; departure: string; arrival: string }) => ({
