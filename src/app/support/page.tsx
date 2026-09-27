@@ -32,6 +32,7 @@ export default function SupportPage(){
     setStatus(next);
   }
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(()=>{load();const timer=setInterval(()=>{if(status==='ONLINE')setPresence('ONLINE')},60000);return()=>clearInterval(timer)},[status]);
 
   return <main className="publicPage">
