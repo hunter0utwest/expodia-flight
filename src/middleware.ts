@@ -2,6 +2,20 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getSupabaseConfig } from './lib/supabase/config';
 
+const publicPaths = [
+  '/',
+  '/explore',
+  '/tracking',
+  '/aviation',
+  '/traveler',
+  '/assistant',
+  '/login',
+];
+
+function isPublicPath(pathname: string) {
+  return publicPaths.some((path) => pathname === path || pathname.startsWith('/verify/'));
+}
+
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
   const { url, anonKey } = getSupabaseConfig();
@@ -21,9 +35,8 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
   const pathname = request.nextUrl.pathname;
-  const publicRoute = pathname === '/login' || pathname.startsWith('/verify/');
 
-  if (!user && !publicRoute) {
+  if (!user && !isPublicPath(pathname)) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
     loginUrl.searchParams.set('next', pathname);
