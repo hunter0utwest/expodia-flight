@@ -13,6 +13,7 @@ export default function AssistantPage(){
   const [reply,setReply]=useState('Tell me what you are here to do. I can help you find the right part of Expodia and, when needed, connect you with an available travel professional.');
   const [loading,setLoading]=useState(false);
   const [sources,setSources]=useState<string[]>([]);
+  const [conversationId,setConversationId]=useState<string|null>(null);
 
   async function connectHuman(){
     setLoading(true);
@@ -57,11 +58,12 @@ export default function AssistantPage(){
     if(!value)return;
     setLoading(true); setSources([]);
     try {
-      const response=await fetch('/api/travel-intelligence',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:value,mode:'assistant'})});
+      const response=await fetch('/api/travel-intelligence',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:value,mode:'assistant',conversationId})});
       const data=await response.json();
       if(!response.ok){setReply(data.error||'Travel research is temporarily unavailable.');return;}
       setReply(data.answer||'No verified answer was returned.');
       setSources(Array.isArray(data.sources)?data.sources:[]);
+      if(data.conversationId)setConversationId(data.conversationId);
     } catch {
       setReply('Travel research is temporarily unavailable.');
     } finally { setLoading(false); }
