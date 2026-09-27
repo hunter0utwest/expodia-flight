@@ -1,0 +1,28 @@
+name: Expodia Agents Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "workers/expodia-agents/**"
+      - ".github/workflows/expodia-agents-typecheck.yml"
+  pull_request:
+    paths:
+      - "workers/expodia-agents/**"
+      - ".github/workflows/expodia-agents-typecheck.yml"
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: workers/expodia-agents
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: workers/expodia-agents/package.json
+      - run: npm install --no-fund --no-audit
+      - run: npm run typecheck
