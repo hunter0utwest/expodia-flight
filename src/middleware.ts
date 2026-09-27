@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getSupabaseConfig } from './lib/supabase/config';
 
-const publicPaths = ['/', '/explore', '/track', '/aviation-public', '/traveler', '/assistant', '/login'];
+const publicPaths = ['/', '/explore', '/track', '/aviation-public', '/traveler', '/traveler/login', '/traveler/signup', '/assistant', '/login'];
 
 function isPublicPath(pathname: string) {
   return publicPaths.some((path) => pathname === path || pathname.startsWith('/verify/'));
