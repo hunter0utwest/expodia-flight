@@ -264,7 +264,7 @@ export default function AccessPage() {
                 <label>Email<input name="professionalEmail" type="email" autoComplete="email" required /></label>
                 <label>Short message<textarea name="shortMessage" rows={4} maxLength={500} placeholder="Briefly tell Expodia about your experience." required /></label>
                 <label>Password<input name="professionalPassword" type="password" autoComplete="new-password" minLength={8} required /></label>
-                <label>4-digit security PIN<input value={securityPin} onChange={(e) => setSecurityPin(e.target.value.replace(/\\D/g, '').slice(0, 4))} inputMode="numeric" autoComplete="off" maxLength={4} placeholder="••••" required /></label>
+                <label>4-digit security PIN<input value={securityPin} onChange={(e) => setSecurityPin(e.target.value.replace(/\D/g, '').slice(0, 4))} inputMode="numeric" autoComplete="off" maxLength={4} placeholder="••••" required /></label>
                 <label>Professional session period<select value={sessionDuration} onChange={(e) => setSessionDuration(e.target.value)}><option value="1440">24 hours</option><option value="10080">7 days</option><option value="43200">30 days</option><option value="129600">90 days</option></select></label>
                 <button className="primary" type="submit" disabled={loading}>{loading ? 'Verifying invitation…' : 'Create professional account'}</button>
                 <button className="publicSecondary" type="button" onClick={() => setProfessionalMode(false)}>Back to traveler sign up</button>
