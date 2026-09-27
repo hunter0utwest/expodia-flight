@@ -1,6 +1,6 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; }
-:root { --bg:#f5f5f3; --surface:#fff; --ink:#101010; --muted:#6d6d69; --border:#e5e5e0; --border-strong:#d4d4ce; --success:#18794e; --radius-sm:8px; --radius-md:12px; --radius-lg:18px; }
+:root { --bg:#f5f5f3; --surface:#fff; --ink:#101010; --muted:#6d6d69; --border:#e5e5e0; --border-strong:#d4d4ce; --success:#18794e; --expedia-navy:#17233c; --expedia-blue:#315aa8; --expedia-yellow:#ffcc00; --radius-sm:8px; --radius-md:12px; --radius-lg:18px; }
 body { background:var(--bg); color:var(--ink); font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
 button,input,select { font:inherit; } button { cursor:pointer; } button:disabled { cursor:not-allowed; opacity:.55; }
 label { display:grid; gap:7px; color:#3f3f3b; font-size:12px; font-weight:650; letter-spacing:.01em; }
@@ -45,7 +45,7 @@ input::placeholder { color:#9a9a94; } input:focus,select:focus { border-color:#1
 .publicNav { display:flex; align-items:center; gap:20px; }
 .publicNav a { color:#555550; text-decoration:none; font-size:12px; font-weight:650; }
 .publicNav a:hover { color:#101010; }
-.publicNav .agentAccess { color:#fff; background:#111; padding:9px 13px; border-radius:7px; }
+.publicNav .agentAccess { color:#fff; background:var(--expedia-navy); padding:9px 13px; border-radius:7px; }
 .hero { min-height:620px; display:grid; grid-template-columns:minmax(0,1fr) minmax(380px,.9fr); gap:6vw; align-items:center; padding:7vw 7vw 6vw; background:#fff; border-bottom:1px solid #e2e2dd; }
 .heroCopy { max-width:690px; }
 .publicEyebrow { font-size:10px; font-weight:780; letter-spacing:.12em; color:#777770; }
@@ -53,10 +53,10 @@ input::placeholder { color:#9a9a94; } input:focus,select:focus { border-color:#1
 .heroCopy p { max-width:590px; margin:0; color:#62625c; font-size:16px; line-height:1.65; }
 .heroActions { display:flex; gap:10px; margin-top:30px; }
 .publicPrimary,.publicSecondary { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 17px; border-radius:8px; font-size:12px; font-weight:700; text-decoration:none; border:1px solid #111; }
-.publicPrimary { background:#111; color:#fff; }
+.publicPrimary { background:var(--expedia-yellow); color:var(--expedia-navy); border-color:var(--expedia-yellow); }
 .publicSecondary { background:#fff; color:#111; border-color:#cfcfc9; }
 button.publicPrimary:disabled { opacity:.55; }
-.heroMap { min-height:420px; border-radius:24px; background:#111; position:relative; overflow:hidden; box-shadow:0 22px 60px rgba(0,0,0,.13); }
+.heroMap { min-height:420px; border-radius:24px; background:var(--expedia-navy); position:relative; overflow:hidden; box-shadow:0 22px 60px rgba(0,0,0,.13); }
 .mapGrid { position:absolute; inset:0; opacity:.25; background-image:linear-gradient(rgba(255,255,255,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.2) 1px,transparent 1px); background-size:44px 44px; transform:perspective(500px) rotateX(55deg) scale(1.4); transform-origin:center bottom; }
 .mapOrbit { position:absolute; width:90%; height:46%; border:1px solid rgba(255,255,255,.38); border-radius:50%; left:5%; top:27%; transform:rotate(-18deg); }
 .mapOrbitTwo { transform:rotate(34deg) scaleY(.7); border-color:rgba(255,255,255,.18); }
@@ -76,7 +76,7 @@ button.publicPrimary:disabled { opacity:.55; }
 .discoveryCard strong { font-size:18px; line-height:1.25; letter-spacing:-.025em; }
 .discoveryCard small { margin-top:auto; color:#777770; font-size:11px; line-height:1.45; }
 .truthNote { margin-top:18px; padding:15px 17px; background:#ecece7; border-radius:9px; color:#5c5c56; font-size:11px; line-height:1.6; }
-.journeyStrip { display:flex; align-items:center; justify-content:space-between; gap:30px; padding:60px 7vw; background:#111; color:#fff; }
+.journeyStrip { display:flex; align-items:center; justify-content:space-between; gap:30px; padding:60px 7vw; background:var(--expedia-navy); color:#fff; }
 .journeyStrip p { max-width:700px; color:#aaa; line-height:1.6; font-size:13px; }
 .journeyStrip .publicSecondary { flex:none; }
 .journeyStrip .publicEyebrow { color:#888; }
@@ -116,4 +116,82 @@ button.publicPrimary:disabled { opacity:.55; }
   .searchShell,.trackForm { grid-template-columns:1fr; }
   .publicFooter { display:grid; }
   .assistantOptions { grid-template-columns:1fr; }
+}
+
+
+.travelerPlanner { background:#f7f7f4; }
+.travelerTop { max-width:1240px; margin:0 auto; padding:70px 6vw 30px; display:flex; justify-content:space-between; gap:30px; align-items:end; }
+.travelerTop h1 { max-width:760px; margin:12px 0 14px; font-size:clamp(40px,6vw,72px); line-height:.98; letter-spacing:-.06em; }
+.travelerTop p { max-width:760px; margin:0; color:#64645e; line-height:1.65; font-size:14px; }
+.travelerAuthActions { display:flex; gap:8px; flex:none; }
+.travelerSignOut { cursor:pointer; }
+.travelerWorkspace { max-width:1240px; margin:0 auto; padding:20px 6vw 80px; }
+.travelerTabs { display:flex; gap:4px; border-bottom:1px solid #dcdcd6; margin-bottom:20px; }
+.travelerTabs button { border:0; background:transparent; padding:12px 14px; color:#777770; font-size:12px; font-weight:750; border-bottom:2px solid transparent; }
+.travelerTabs button.active { color:var(--expedia-navy); border-bottom-color:var(--expedia-yellow); }
+.planningComposer { background:#fff; border:1px solid #deded8; border-radius:16px; padding:24px; }
+.planningComposer h2 { margin:8px 0 18px; font-size:24px; letter-spacing:-.035em; }
+.intentGrid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+.intentGrid button { min-height:90px; padding:14px; text-align:left; border:1px solid #e0e0da; background:#fafaf7; border-radius:10px; display:grid; gap:7px; }
+.intentGrid button:hover { border-color:var(--expedia-blue); background:#fff; }
+.intentGrid strong { color:var(--expedia-navy); font-size:13px; }
+.intentGrid small { color:#777770; line-height:1.4; font-size:10px; }
+.freePlanRow { display:grid; grid-template-columns:1fr auto; gap:8px; margin-top:10px; }
+.planningSection { margin-top:42px; }
+.planningSection .sectionHeading { margin-bottom:16px; }
+.plannerStatus { color:#777770; font-size:10px; }
+.planningList { display:grid; gap:8px; }
+.planningItem { display:flex; justify-content:space-between; gap:20px; padding:18px; background:#fff; border:1px solid #deded8; border-radius:12px; }
+.planningItem > div:first-child { min-width:0; }
+.planningItem span { color:#777770; font-size:9px; font-weight:800; letter-spacing:.1em; }
+.planningItem h3 { margin:6px 0 5px; font-size:16px; letter-spacing:-.02em; }
+.planningItem p { margin:0; color:#777770; font-size:11px; line-height:1.5; }
+.planningItemActions { display:flex; align-items:flex-start; gap:8px; white-space:nowrap; }
+.planningItemActions a,.planningItemActions button { border:0; background:transparent; color:var(--expedia-blue); font-size:11px; font-weight:750; text-decoration:none; padding:4px; }
+.planningItemActions button { color:#777770; cursor:pointer; }
+.planningEmpty { padding:40px 22px; text-align:center; background:#fff; border:1px dashed #d4d4ce; border-radius:12px; color:#777770; font-size:12px; line-height:1.6; }
+.groupWorkspace { display:grid; grid-template-columns:280px 1fr; gap:10px; min-height:420px; }
+.groupList,.groupChat { background:#fff; border:1px solid #deded8; border-radius:14px; overflow:hidden; }
+.groupCreate { display:grid; grid-template-columns:1fr auto; gap:6px; padding:10px; border-bottom:1px solid #e6e6e1; }
+.groupCreate input { min-height:40px; }
+.groupCreate .publicPrimary { min-height:40px; padding-inline:12px; }
+.groupRow { width:100%; border:0; border-bottom:1px solid #eee; background:#fff; text-align:left; padding:13px 14px; font-size:12px; font-weight:650; color:#333; }
+.groupRow.active { background:#fff8d9; color:var(--expedia-navy); }
+.groupChat { display:flex; flex-direction:column; }
+.groupChatHeader { padding:16px; border-bottom:1px solid #e6e6e1; display:flex; justify-content:space-between; gap:15px; align-items:center; }
+.groupChatHeader h2 { margin:5px 0 0; font-size:17px; }
+.groupInvite { display:flex; gap:6px; }
+.groupInvite input { min-height:38px; width:150px; }
+.groupInvite button { border:1px solid #d0d0ca; background:#fff; border-radius:7px; padding:0 10px; font-size:11px; font-weight:700; }
+.groupMessages { flex:1; min-height:250px; padding:16px; display:flex; flex-direction:column; gap:8px; background:#fafaf7; }
+.groupMessage { align-self:flex-start; max-width:72%; padding:9px 12px; background:#fff; border:1px solid #e0e0da; border-radius:12px; font-size:12px; line-height:1.45; }
+.groupMessage.own { align-self:flex-end; background:var(--expedia-yellow); border-color:var(--expedia-yellow); color:var(--expedia-navy); }
+.groupComposer { display:grid; grid-template-columns:1fr auto; gap:6px; padding:10px; border-top:1px solid #e6e6e1; }
+.groupComposer input { min-height:40px; }
+.assistantComposer { margin-top:24px; display:grid; grid-template-columns:1fr auto; gap:8px; }
+.assistantSuggestions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+.assistantSuggestions button { min-height:46px; padding:0 12px; text-align:left; border:1px solid #deded8; background:#fff; border-radius:8px; font-size:11px; font-weight:650; }
+.assistantSuggestions button:hover { border-color:var(--expedia-blue); }
+.assistantPlanLink { margin-top:14px; }
+.travelerAuthLinks { display:flex; justify-content:space-between; gap:12px; font-size:11px !important; }
+.travelerAuthLinks a { color:var(--expedia-blue); font-weight:700; text-decoration:none; }
+
+@media (max-width:800px) {
+  .travelerTop { display:block; padding-top:45px; }
+  .travelerAuthActions { margin-top:18px; }
+  .travelerAuthActions a { flex:1; }
+  .intentGrid { grid-template-columns:1fr 1fr; }
+  .groupWorkspace { grid-template-columns:1fr; }
+  .groupChat { min-height:400px; }
+  .groupChatHeader { display:block; }
+  .groupInvite { margin-top:12px; }
+  .groupInvite input { width:100%; flex:1; }
+  .assistantComposer { grid-template-columns:1fr; }
+  .assistantSuggestions { grid-template-columns:1fr; }
+}
+@media (max-width:520px) {
+  .intentGrid { grid-template-columns:1fr; }
+  .freePlanRow { grid-template-columns:1fr; }
+  .planningItem { display:block; }
+  .planningItemActions { margin-top:12px; }
 }
