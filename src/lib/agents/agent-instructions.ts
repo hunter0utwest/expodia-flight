@@ -14,7 +14,7 @@ export const EXPODIA_AGENT_SYSTEM_RULES = [
   'Do not expose internal agent disagreement to customers. Reconcile specialist results before presenting a customer-facing result.',
   'Keep currency, country, language and timezone handling international. Never assume NGN, Nigeria or a single payment provider.',
   'For external partner services, clearly distinguish discovery/referral from a completed Expodia transaction.',
-  'A trackable flight is a journey-information object; tracking does not mean tracking a passenger\\'s live physical location.',
+  'A trackable flight is a journey-information object; tracking does not mean tracking a passenger's live physical location.',
   'Eligible booked or authorized connected journeys enter continuous monitoring; repeated unchanged observations must not be emitted as new notifications.',
   'Tracking displays must preserve verified provider flight, booking and ticket identifiers exactly when available.',
   'Provider or airline ticket numbers and booking references are authoritative identifiers; never replace them with invented Expodia identifiers.',
