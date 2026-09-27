@@ -82,3 +82,37 @@ create policy "admins update referral codes"
 on public.agent_registration_codes for update to authenticated
 using (exists (select 1 from public.company_admins a where a.user_id = (select auth.uid())))
 with check (exists (select 1 from public.company_admins a where a.user_id = (select auth.uid())));
+
+
+-- First management account bootstrap.
+-- This is safe to run after the auth user exists; it only links the supplied email
+-- to an existing auth.users row and never creates or changes credentials.
+create or replace function public.bootstrap_company_admin(p_email text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare target_id uuid;
+begin
+  select id into target_id from auth.users
+  where lower(email) = lower(trim(p_email))
+  limit 1;
+
+  if target_id is null then
+    return false;
+  end if;
+
+  insert into public.company_admins(user_id, display_name, email)
+  values (
+    target_id,
+    coalesce(nullif(trim((select raw_user_meta_data->>'full_name' from auth.users where id = target_id)), ''), 'Expodia Management'),
+    lower(trim(p_email))
+  )
+  on conflict (user_id) do update set email = excluded.email;
+
+  return true;
+end;
+$$;
+
+revoke execute on function public.bootstrap_company_admin(text) from public, anon, authenticated;
