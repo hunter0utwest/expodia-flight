@@ -12,6 +12,14 @@ describe('scan identity resolution', () => {
     expect(keys).toEqual(['EXP-ABC','TRK-XYZ','PROVIDER-REF','BOOK-456','TICKET-123','DOC-789','SER-001']);
   });
 
+  it('supports plan references as scan identities', () => {
+    const keys = buildScanLookupKeys({
+      version: 1, kind: 'PLAN', productKind: 'FLIGHT', issuer: 'Expodia',
+      reference: 'PLAN-REF', planReference: 'PLAN-2026', serialNumber: 'PLAN-SERIAL', signature: 'signed',
+    });
+    expect(keys).toEqual(['PLAN-2026','PLAN-REF','PLAN-SERIAL']);
+  });
+
   it('creates a controlled verification path without exposing the raw provider reference', () => {
     expect(buildControlledResolutionPath('EXP/ABC')).toBe('/verify/EXP%2FABC');
   });
