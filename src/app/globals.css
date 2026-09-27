@@ -202,3 +202,13 @@ button.publicPrimary:disabled { opacity:.55; }
 .travelerUsernameForm { display:flex; gap:7px; flex:none; }
 .travelerUsernameForm input { min-height:40px; width:190px; }
 @media (max-width:800px) { .travelerUsernamePrompt { display:block; } .travelerUsernameForm { margin-top:12px; } .travelerUsernameForm input { flex:1; width:auto; } }
+
+.appleAirportMap{position:relative;overflow:hidden;border-radius:24px;background:#eef0f3;box-shadow:0 22px 60px rgba(0,0,0,.13)}
+.appleAirportMapCanvas{position:absolute;inset:0}
+.appleAirportMapStatus{position:absolute;left:14px;bottom:14px;padding:7px 10px;border-radius:8px;background:rgba(255,255,255,.92);color:#555;font-size:10px;font-weight:700;box-shadow:0 3px 14px rgba(0,0,0,.12)}
+.assistantHandoff{margin-top:14px;padding:17px;border:1px solid #deded8;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.assistantHandoff div{display:grid;gap:5px}
+.assistantHandoff strong{font-size:12px}
+.assistantHandoff span{max-width:560px;color:#777;font-size:11px;line-height:1.55}
+.assistantHandoff button{flex:none}
+@media(max-width:700px){.assistantHandoff{display:grid}.assistantHandoff button{width:100%}}
