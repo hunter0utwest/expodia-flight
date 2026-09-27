@@ -13,7 +13,7 @@ export default async function CartPage() {
   const items = (cart?.cart_items ?? []) as Array<{
     id: string;
     quantity: number;
-    flight_offers: { id: string; provider_name: string; provider_offer_id: string; currency: string; total_amount: number; source: string; expires_at: string | null; raw_offer: { segments?: Array<{ carrierCode: string; flightNumber: string; originIata: string; destinationIata: string; departureLocal: string; arrivalLocal: string }> } | null } | null;
+    flight_offers: Array<{ id: string; provider_name: string; provider_offer_id: string; currency: string; total_amount: number; source: string; expires_at: string | null; raw_offer: { segments?: Array<{ carrierCode: string; flightNumber: string; originIata: string; destinationIata: string; departureLocal: string; arrivalLocal: string }> } | null }>
   }>;
 
   return (
@@ -32,7 +32,7 @@ export default async function CartPage() {
         ) : (
           <div className="cartList">
             {items.map((item) => {
-              const offer = item.flight_offers;
+              const offer = item.flight_offers[0] ?? null;
               const segments = offer?.raw_offer?.segments ?? [];
               return (
                 <article className="card cartItem" key={item.id}>
