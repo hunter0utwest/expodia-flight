@@ -8,11 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "test": "vitest run"
   },
   "dependencies": {
     "@supabase/ssr": "latest",
@@ -22,8 +18,7 @@
     "qrcode": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "zod": "latest",
-    "@opennextjs/cloudflare": "latest"
+    "zod": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",
@@ -33,7 +28,6 @@
     "eslint": "latest",
     "eslint-config-next": "latest",
     "typescript": "latest",
-    "vitest": "latest",
-    "wrangler": "latest"
+    "vitest": "latest"
   }
 }
