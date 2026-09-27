@@ -1,9 +1,13 @@
 -- Security hardening for traveler RPCs and management marketplace tables.
 
-revoke execute on function public.create_traveler_support_conversation(text, uuid) from anon;
-revoke execute on function public.set_traveler_security(text) from anon;
-revoke execute on function public.verify_traveler_security(text) from anon;
-revoke execute on function public.find_traveler_by_username(text) from anon;
+revoke execute on function public.create_traveler_support_conversation(text, uuid) from public;
+grant execute on function public.create_traveler_support_conversation(text, uuid) to authenticated;
+revoke execute on function public.set_traveler_security(text) from public;
+grant execute on function public.set_traveler_security(text) to authenticated;
+revoke execute on function public.verify_traveler_security(text) from public;
+grant execute on function public.verify_traveler_security(text) to authenticated;
+revoke execute on function public.find_traveler_by_username(text) from public;
+grant execute on function public.find_traveler_by_username(text) to authenticated;
 
 drop policy if exists "company_admin_marketplace_providers_select" on public.marketplace_providers;
 drop policy if exists "company_admin_marketplace_providers_insert" on public.marketplace_providers;
