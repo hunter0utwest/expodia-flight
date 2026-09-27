@@ -6,12 +6,6 @@ function hashClientAddress(value: string): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
-function limitedPassengerName(givenName: string, familyName: string): string {
-  const first = givenName.trim().slice(0, 1);
-  const family = familyName.trim();
-  return family ? `${first}. ${family}` : first;
-}
-
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ verificationId: string }> },
@@ -91,19 +85,6 @@ export async function GET(
       );
     }
 
-    const { data: passenger, error: passengerError } = await admin
-      .from('passengers')
-      .select('given_name, family_name')
-      .eq('id', (await admin.from('tickets').select('passenger_id').eq('id', ticket.id).single()).data?.passenger_id ?? '')
-      .maybeSingle();
-
-    if (passengerError) {
-      return NextResponse.json(
-        { error: { code: 'VERIFICATION_UNAVAILABLE', message: 'The passenger record could not be resolved.' } },
-        { status: 503 },
-      );
-    }
-
     const { data: segments, error: segmentError } = await admin
       .from('flight_segments')
       .select('carrier_code, flight_number, origin_iata, destination_iata, departure_local, arrival_local, terminal')
@@ -132,7 +113,6 @@ export async function GET(
         pnr: booking.pnr,
         status: booking.status,
       },
-      passenger: passenger ? { name: limitedPassengerName(passenger.given_name, passenger.family_name) } : null,
       itinerary: (segments ?? []).map((segment) => ({
         airline: segment.carrier_code,
         flightNumber: segment.flight_number,
