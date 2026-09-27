@@ -1,6 +1,6 @@
 import type { TravelProductKind } from './travel-provider';
 
-export type ScanPayloadKind = 'TICKET' | 'BOOKING' | 'DOCUMENT' | 'TRACKING_REFERENCE';
+export type ScanPayloadKind = 'TICKET' | 'BOOKING' | 'DOCUMENT' | 'TRACKING_REFERENCE' | 'PLAN';
 
 export interface ScanPayload {
   version: 1;
@@ -14,6 +14,7 @@ export interface ScanPayload {
   serialNumber?: string;
   expodiaReference?: string;
   trackingReference?: string;
+  planReference?: string;
   issuedAt?: string;
   expiresAt?: string;
   signature: string;
@@ -41,6 +42,7 @@ export function resolveScanPayload(payload: ScanPayload): ScanResolution {
       serialNumber: payload.serialNumber,
       expodiaReference: payload.expodiaReference,
       trackingReference: payload.trackingReference,
+      planReference: payload.planReference,
       issuedAt: payload.issuedAt,
       expiresAt: payload.expiresAt,
     },
@@ -51,6 +53,7 @@ export function buildScanLookupKeys(payload: ScanPayload): string[] {
   return [...new Set([
     payload.expodiaReference,
     payload.trackingReference,
+    payload.planReference,
     payload.reference,
     payload.bookingReference,
     payload.ticketNumber,
