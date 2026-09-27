@@ -8,7 +8,7 @@ import type {
   ProviderSegment,
   ProviderTicketIssuance,
 } from '@/lib/providers/contracts';
-import type { ProviderCapabilitySet } from '@/lib/flights/capabilities';
+import type { ProviderCapability, ProviderCapabilitySet } from '@/lib/flights/capabilities';
 import { ProviderError } from '@/lib/providers/errors';
 import { DuffelClient } from './client';
 
@@ -91,7 +91,7 @@ function toOffer(offer: DuffelOffer): ProviderFlightOffer {
 
 export class DuffelFlightProvider implements FlightProvider {
   readonly name = 'duffel';
-  readonly capabilities: ProviderCapabilitySet = new Set(['SEARCH', 'REVALIDATE', 'BOOK', 'TICKET']);
+  readonly capabilities: ProviderCapabilitySet = new Set<ProviderCapability>(['SEARCH', 'REVALIDATE', 'BOOK', 'TICKET']);
 
   constructor(private readonly client = new DuffelClient()) {}
 
