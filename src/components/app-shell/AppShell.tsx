@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 const navigation = [
-  ['Dashboard', '/'],
+  ['Dashboard', '/agent'],
   ['Find flights', '/bookings/new'],
   ['Cart', '/cart'],
   ['Bookings', '/bookings'],
