@@ -188,7 +188,7 @@ export default function AccessPage() {
     }
 
     const password = String(form.get('professionalPassword') ?? '');
-    if (!/^\\d{4}$/.test(securityPin)) {
+    if (!/^\d{4}$/.test(securityPin)) {
       setError('Create a four-digit security PIN.');
       setLoading(false);
       return;
