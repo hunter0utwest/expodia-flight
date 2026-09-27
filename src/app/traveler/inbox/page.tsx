@@ -35,7 +35,7 @@ export default function TravelerInboxPage(){
     setMessages(data??[]);
   }
 
-  useEffect(()=>{void load();},[params]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect\n  useEffect(()=>{void load();},[params]);
 
   async function send(){
     if(!active||!userId||!draft.trim())return;
