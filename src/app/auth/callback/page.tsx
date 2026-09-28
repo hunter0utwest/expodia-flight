@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
   const router = useRouter();
   const params = useSearchParams();
   const [error, setError] = useState('');
@@ -110,5 +110,29 @@ export default function AuthCallbackPage() {
         )}
       </section>
     </main>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="verificationPage">
+          <section className="verificationCard travelerAuthCard">
+            <div className="verificationBadge">EXPODIA</div>
+            <div className="publicEyebrow" style={{ marginTop: 18 }}>
+              EMAIL CONFIRMATION
+            </div>
+            <h1 style={{ marginTop: 8 }}>Confirming your Expodia account…</h1>
+            <p>
+              Your email is being verified. We will return you to your traveler
+              space as soon as the session is ready.
+            </p>
+          </section>
+        </main>
+      }
+    >
+      <AuthCallbackContent />
+    </Suspense>
   );
 }
