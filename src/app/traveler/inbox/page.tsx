@@ -1,14 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type Conversation={id:string;subject:string|null;status:string;created_at:string};
 type Message={id:string;body:string;sender_user_id:string;created_at:string};
 
-export default function TravelerInboxPage(){
+function TravelerInboxContent(){
   const supabase=createSupabaseBrowserClient();
   const params=useSearchParams();
   const [userId,setUserId]=useState<string|null>(null);
@@ -35,7 +35,8 @@ export default function TravelerInboxPage(){
     setMessages(data??[]);
   }
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect\n  useEffect(()=>{void load();},[params]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(()=>{void load();},[params]);
 
   useEffect(()=>{
     if(!active?.id)return;
@@ -68,4 +69,8 @@ export default function TravelerInboxPage(){
       {error&&<div className="notice" role="alert">{error}</div>}
     </section>
   </main>;
+}
+
+export default function TravelerInboxPage(){
+  return <Suspense fallback={<main className="travelerApp"><section className="travelerWorkspace travelerInboxPage"><div className="planningEmpty">Loading your inbox…</div></section></main>}><TravelerInboxContent /></Suspense>;
 }
