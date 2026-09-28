@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl, { Map as MapLibreMap, Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import './expodia-map.css';
 import { ensureMapLibreWorker } from '@/lib/map/setupWorker';
 import { getDefaultMapStyle } from '@/lib/map/provider';
 import type { MapAirport } from '@/lib/map/contracts';
